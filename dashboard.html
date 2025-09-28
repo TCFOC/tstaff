@@ -1,0 +1,85 @@
+<!-- Google Fonts: IBM Plex Sans Thai -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<div style="font-family:'IBM Plex Sans Thai',system-ui,sans-serif; height:100vh; display:flex; flex-direction:column; margin:0;">
+
+  <!-- Top Bar -->
+  <div style="background:linear-gradient(90deg,#AD28F5,#2D68F2); color:white; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; font-size:1.2rem; font-weight:600;">
+    <div>TStaff</div>
+    <div><span style="color:#ddd; font-weight:400;">Welcome, </span><span style="font-weight:700;">Name</span></div>
+  </div>
+
+  <!-- Main Content -->
+  <div style="flex:1; display:flex; overflow:hidden;">
+
+    <!-- Left Column -->
+    <div style="flex:1; display:flex; flex-direction:column; border-right:2px solid #eee; position:relative;">
+
+      <!-- Announcements -->
+      <div style="flex:1; padding:1rem; background:#fafafa; display:flex; flex-direction:column; overflow-y:auto; margin-bottom:50px;">
+        <h2 style="margin:0 0 0.8rem 0; color:#AD28F5;">📢 Announcements</h2>
+        <div style="flex:1; background:#fff; border-radius:10px; padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow-y:auto;">
+          <p><strong>[2025-09-28]</strong> Venue booking confirmed.</p>
+          <p><strong>[2025-09-25]</strong> Sponsor deck updated, see Google Drive.</p>
+          <p><strong>[2025-09-20]</strong> Exam committee meeting on Friday.</p>
+          <p><strong>[2025-09-15]</strong> Reminder: confirm volunteer list.</p>
+          <p><strong>[2025-09-10]</strong> Draft exam review complete.</p>
+          <p><strong>[2025-09-05]</strong> TCF logo rebranding approved.</p>
+        </div>
+      </div>
+
+      <!-- Collapsible Account -->
+      <div id="accountPanel" style="position:absolute; bottom:0; left:0; right:0; background:#fff; border-top:2px solid #eee; box-shadow:0 -2px 6px rgba(0,0,0,0.08); transition:height 0.3s ease; height:40px; overflow:hidden;">
+        <!-- Header -->
+        <div onclick="toggleAccount()" style="padding:0.5rem 1rem; cursor:pointer; color:#AD28F5; font-weight:600; display:flex; justify-content:space-between; align-items:center;">
+          ⚙️ Account
+          <span id="accountArrow" style="font-size:0.9rem;">▲</span>
+        </div>
+        <!-- Content -->
+        <div id="accountContent" style="padding:0 1rem 1rem 1rem; font-size:0.9rem; color:#333;">
+          <p style="margin:0;"><strong>Name:</strong> Korn</p>
+          <p style="margin:0;"><strong>Role:</strong> Committee Member</p>
+          <p style="margin:0;"><strong>Email:</strong> example@email.com</p>
+          <p style="margin:0;"><strong>Line ID:</strong> @korn</p>
+          <button style="margin-top:0.4rem; background:#AD28F5; color:white; border:none; padding:0.4rem 1rem; border-radius:6px; cursor:pointer; font-size:0.9rem; font-weight:500;">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column (To-Do) -->
+    <div style="flex:1; padding:1rem; background:#fafafa; display:flex; flex-direction:column;">
+      <h2 style="margin:0 0 0.8rem 0; color:#AD28F5;">✅ To-Do</h2>
+      <div style="flex:1; background:#fff; border-radius:10px; padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow-y:auto;">
+        <ul style="margin:0; padding-left:1.2rem;">
+          <li>Print 200 exam papers</li>
+          <li>Confirm judges’ list</li>
+          <li>Send reminder to schools</li>
+          <li>Check sponsor deliverables</li>
+          <li>Arrange transportation for staff</li>
+          <li>Prepare press release</li>
+          <li>Update budget sheet</li>
+          <li>Order snacks for exam day</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let accountOpen = false;
+  function toggleAccount() {
+    const panel = document.getElementById("accountPanel");
+    const arrow = document.getElementById("accountArrow");
+    if (accountOpen) {
+      panel.style.height = "40px";
+      arrow.textContent = "▲";
+    } else {
+      panel.style.height = "200px";
+      arrow.textContent = "▼";
+    }
+    accountOpen = !accountOpen;
+  }
+</script>
