@@ -1,0 +1,114 @@
+<!-- Google Fonts: IBM Plex Sans Thai -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<div style="font-family:'IBM Plex Sans Thai',system-ui,sans-serif; height:100vh; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#AD28F5,#2D68F2); margin:0; flex-direction:column;">
+
+  <!-- Title -->
+  <h1 style="font-size:2.2rem; font-weight:700; margin-bottom:1rem; color:white;">
+    Welcome to TStaff
+  </h1>
+
+  <!-- Auth Card -->
+  <div style="background:#fff; border-radius:12px; width:350px; box-shadow:0 6px 20px rgba(0,0,0,0.15); overflow:hidden;">
+    
+    <!-- Tabs -->
+    <div style="display:flex; position:relative; border-bottom:2px solid #eee;">
+      <div id="loginTab" onclick="switchTab('login')" style="flex:1; text-align:center; padding:1rem; cursor:pointer; font-weight:600; color:#AD28F5;">Login</div>
+      <div id="signupTab" onclick="switchTab('signup')" style="flex:1; text-align:center; padding:1rem; cursor:pointer; font-weight:600; color:#666;">Sign Up</div>
+      <!-- Moving underline -->
+      <div id="underline" style="position:absolute; bottom:0; left:0; width:50%; height:3px; background:#AD28F5; transition:all 0.3s ease;"></div>
+    </div>
+
+    <!-- Forms -->
+    <div style="padding:1.5rem;">
+      
+      <!-- Login Form -->
+      <div id="loginForm">
+        <input id="loginEmail" type="email" placeholder="Email" style="width:100%; padding:0.8rem; margin-bottom:0.8rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
+        <input id="loginPassword" type="password" placeholder="Password" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
+        <button onclick="login()" style="width:100%; background:#AD28F5; color:white; padding:0.8rem; border:none; border-radius:6px; font-weight:600; cursor:pointer;">Login</button>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signupForm" style="display:none;">
+        <input id="signupEmail" type="email" placeholder="Email" style="width:100%; padding:0.8rem; margin-bottom:0.8rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
+        <input id="signupPassword" type="password" placeholder="Password" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
+        <button onclick="signup()" style="width:100%; background:#2D68F2; color:white; padding:0.8rem; border:none; border-radius:6px; font-weight:600; cursor:pointer;">Sign Up</button>
+      </div>
+      
+      <!-- Status -->
+      <p id="status" style="margin-top:1rem; font-size:0.9rem; color:#F82634; text-align:center;"></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  // Firebase SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+    authDomain: "tstaff-tcf.firebaseapp.com",
+    projectId: "tstaff-tcf",
+    storageBucket: "tstaff-tcf.firebasestorage.app",
+    messagingSenderId: "1038965947691",
+    appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
+  };
+
+  // Init Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Switch between Login / Signup
+  window.switchTab = function(tab) {
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const underline = document.getElementById("underline");
+
+    if (tab === "login") {
+      loginForm.style.display = "block";
+      signupForm.style.display = "none";
+      loginTab.style.color = "#AD28F5";
+      signupTab.style.color = "#666";
+      underline.style.left = "0";
+      underline.style.background = "#AD28F5";
+    } else {
+      loginForm.style.display = "none";
+      signupForm.style.display = "block";
+      loginTab.style.color = "#666";
+      signupTab.style.color = "#2D68F2";
+      underline.style.left = "50%";
+      underline.style.background = "#2D68F2";
+    }
+  };
+
+  // Login
+  window.login = async function() {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      document.getElementById("status").innerText = "✅ Login successful!";
+      // TODO: Redirect to dashboard
+    } catch (error) {
+      document.getElementById("status").innerText = "❌ " + error.message;
+    }
+  };
+
+  // Signup
+  window.signup = async function() {
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      document.getElementById("status").innerText = "✅ Signup successful!";
+      // TODO: Redirect to dashboard
+    } catch (error) {
+      document.getElementById("status").innerText = "❌ " + error.message;
+    }
+  };
+</script>
