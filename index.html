@@ -11,6 +11,7 @@
       height: 100dvh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     /* Dashboard grid */
@@ -30,9 +31,25 @@
       #dashboard {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
+        overflow-y: auto;
       }
       #dashboard > div {
         grid-row: auto !important;
+      }
+
+      #loginBox {
+        width: 95%;
+        padding: 1.2rem;
+      }
+
+      #accountDropdown {
+        right: 10px;
+        width: 90%;
+        max-width: 340px;
+      }
+
+      h2 {
+        font-size: 1.1rem;
       }
     }
 
