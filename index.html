@@ -1,114 +1,208 @@
-<!-- Google Fonts: IBM Plex Sans Thai -->
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>TStaff</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0; font-family:'IBM Plex Sans Thai',system-ui,sans-serif; height:100vh; display:flex; flex-direction:column;">
 
-<div style="font-family:'IBM Plex Sans Thai',system-ui,sans-serif; height:100vh; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#AD28F5,#2D68F2); margin:0; flex-direction:column;">
+  <!-- App Wrapper -->
+  <div id="appContent" style="flex:1; display:none; flex-direction:column; position:relative;">
 
-  <!-- Title -->
-  <h1 style="font-size:2.2rem; font-weight:700; margin-bottom:1rem; color:white;">
-    Welcome to TStaff
-  </h1>
-
-  <!-- Auth Card -->
-  <div style="background:#fff; border-radius:12px; width:350px; box-shadow:0 6px 20px rgba(0,0,0,0.15); overflow:hidden;">
-    
-    <!-- Tabs -->
-    <div style="display:flex; position:relative; border-bottom:2px solid #eee;">
-      <div id="loginTab" onclick="switchTab('login')" style="flex:1; text-align:center; padding:1rem; cursor:pointer; font-weight:600; color:#AD28F5;">Login</div>
-      <div id="signupTab" onclick="switchTab('signup')" style="flex:1; text-align:center; padding:1rem; cursor:pointer; font-weight:600; color:#666;">Sign Up</div>
-      <!-- Moving underline -->
-      <div id="underline" style="position:absolute; bottom:0; left:0; width:50%; height:3px; background:#AD28F5; transition:all 0.3s ease;"></div>
+    <!-- Top Bar -->
+    <div style="background:linear-gradient(90deg,#AD28F5,#2D68F2); color:white; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; font-size:1.2rem; font-weight:600;">
+      <div>TStaff</div>
+      <div><span style="color:#ddd; font-weight:400;">Hello, </span><span id="userName" style="font-weight:700;">Guest</span></div>
     </div>
 
-    <!-- Forms -->
-    <div style="padding:1.5rem;">
-      
-      <!-- Login Form -->
-      <div id="loginForm">
-        <input id="loginEmail" type="email" placeholder="Email" style="width:100%; padding:0.8rem; margin-bottom:0.8rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
-        <input id="loginPassword" type="password" placeholder="Password" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
-        <button onclick="login()" style="width:100%; background:#AD28F5; color:white; padding:0.8rem; border:none; border-radius:6px; font-weight:600; cursor:pointer;">Login</button>
+    <!-- Member Dashboard -->
+    <div id="dashboard" style="flex:1; display:none; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; padding:10px; background:#fafafa;">
+      <!-- To-Do -->
+      <div style="grid-row:1 / span 2; background:#fff; border-radius:10px; padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#AD28F5;">✅ To-Do</h2>
+        <ul>
+          <li>Print 200 exam papers</li>
+          <li>Confirm judges’ list</li>
+          <li>Send reminder to schools</li>
+        </ul>
       </div>
+      <!-- Announcements -->
+      <div style="background:#fff; border-radius:10px; padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#AD28F5;">📢 Announcements</h2>
+        <p><strong>[2025-09-28]</strong> Venue booking confirmed.</p>
+        <p><strong>[2025-09-25]</strong> Sponsor deck updated.</p>
+      </div>
+      <!-- Suggestions -->
+      <div style="background:#fff; border-radius:10px; padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#AD28F5;">💡 Suggestions</h2>
+        <textarea placeholder="Write your idea..." style="width:100%; height:70px; resize:none; border:1px solid #ccc; border-radius:6px; padding:0.6rem;"></textarea>
+        <button style="width:100%; margin-top:0.5rem; background:#AD28F5; color:white; border:none; padding:0.6rem; border-radius:6px; font-weight:600; cursor:pointer;">Submit</button>
+      </div>
+    </div>
 
-      <!-- Signup Form -->
-      <div id="signupForm" style="display:none;">
-        <input id="signupEmail" type="email" placeholder="Email" style="width:100%; padding:0.8rem; margin-bottom:0.8rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
-        <input id="signupPassword" type="password" placeholder="Password" style="width:100%; padding:0.8rem; margin-bottom:1rem; border:1px solid #ccc; border-radius:6px; font-family:'IBM Plex Sans Thai';">
-        <button onclick="signup()" style="width:100%; background:#2D68F2; color:white; padding:0.8rem; border:none; border-radius:6px; font-weight:600; cursor:pointer;">Sign Up</button>
+    <!-- Recruitment Page -->
+    <div id="recruitment" style="flex:1; display:none; align-items:center; justify-content:center; font-size:1.3rem; color:#AD28F5; background:#fafafa;">
+      🚧 Recruitment Page (Coming Soon)
+    </div>
+
+    <!-- Account (collapsible) -->
+    <div id="accountPanel" style="position:absolute; bottom:0; left:0; width:50%; background:#fff; border-top:2px solid #eee; box-shadow:0 -2px 6px rgba(0,0,0,0.08); transition:height 0.3s ease; height:40px; overflow:hidden;">
+      <div onclick="toggleAccount()" style="padding:0.5rem 1rem; cursor:pointer; color:#AD28F5; font-weight:600; display:flex; justify-content:space-between; align-items:center;">
+        ⚙️ Account <span id="accountArrow">▲</span>
       </div>
-      
-      <!-- Status -->
-      <p id="status" style="margin-top:1rem; font-size:0.9rem; color:#F82634; text-align:center;"></p>
+      <div style="padding:0 1rem 1rem 1rem; font-size:0.9rem; color:#333; overflow-y:auto; max-height:220px;">
+        <p><strong>Full Name:</strong> <span id="accountName"></span></p>
+        <p><strong>Email:</strong> <span id="accountEmail"></span></p>
+        <p><strong>Status:</strong> <span id="accountStatus" style="font-weight:600; color:#000;"></span></p>
+        <button onclick="logout()" style="margin-top:0.6rem; background:#AD28F5; color:white; border:none; padding:0.6rem 1rem; border-radius:6px; cursor:pointer;">Logout</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script type="module">
-  // Firebase SDK
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <!-- Login / Signup Overlay -->
+  <div id="loginOverlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:2rem; border-radius:12px; width:340px; max-width:90%; box-sizing:border-box; box-shadow:0 10px 30px rgba(0,0,0,0.35);">
 
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
-    authDomain: "tstaff-tcf.firebaseapp.com",
-    projectId: "tstaff-tcf",
-    storageBucket: "tstaff-tcf.firebasestorage.app",
-    messagingSenderId: "1038965947691",
-    appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
-  };
+      <!-- Tabs -->
+      <div style="display:flex; margin-bottom:1rem; border-bottom:2px solid #eee;">
+        <div id="loginTab" onclick="showTab('login')" style="flex:1; text-align:center; padding:0.6rem; cursor:pointer; font-weight:600; color:#AD28F5; border-bottom:3px solid #AD28F5;">Login</div>
+        <div id="signupTab" onclick="showTab('signup')" style="flex:1; text-align:center; padding:0.6rem; cursor:pointer; font-weight:600; color:#555;">Sign Up</div>
+      </div>
 
-  // Init Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+      <!-- Login -->
+      <div id="loginForm">
+        <input id="loginEmail" type="email" placeholder="Email" style="width:100%; box-sizing:border-box; padding:0.8rem; margin-bottom:0.8rem; border:1px solid #ccc; border-radius:6px;">
+        <input id="loginPassword" type="password" placeholder="Password" style="width:100%; box-sizing:border-box; padding:0.8rem; margin-bottom:1rem; border:1px solid #ccc; border-radius:6px;">
+        <button onclick="login()" style="width:100%; background:#AD28F5; color:white; border:none; padding:0.8rem; border-radius:6px; font-weight:600; cursor:pointer;">Login</button>
+        <p id="loginStatus" style="margin-top:0.8rem; font-size:0.9rem; color:#d23;"></p>
+      </div>
 
-  // Switch between Login / Signup
-  window.switchTab = function(tab) {
-    const loginForm = document.getElementById("loginForm");
-    const signupForm = document.getElementById("signupForm");
-    const loginTab = document.getElementById("loginTab");
-    const signupTab = document.getElementById("signupTab");
-    const underline = document.getElementById("underline");
+      <!-- Sign Up -->
+      <div id="signupForm" style="display:none;">
+        <input id="signupName" type="text" placeholder="Full Name" style="width:100%; box-sizing:border-box; padding:0.8rem; margin-bottom:0.8rem; border:1px solid #ccc; border-radius:6px;">
+        <input id="signupEmail" type="email" placeholder="Email" style="width:100%; box-sizing:border-box; padding:0.8rem; margin-bottom:0.8rem; border:1px solid #ccc; border-radius:6px;">
+        <input id="signupPassword" type="password" placeholder="Password" style="width:100%; box-sizing:border-box; padding:0.8rem; margin-bottom:1rem; border:1px solid #ccc; border-radius:6px;">
+        <button onclick="signup()" style="width:100%; background:#AD28F5; color:white; border:none; padding:0.8rem; border-radius:6px; font-weight:600; cursor:pointer;">Sign Up</button>
+        <p id="signupStatus" style="margin-top:0.8rem; font-size:0.9rem; color:#d23;"></p>
+      </div>
+    </div>
+  </div>
 
-    if (tab === "login") {
-      loginForm.style.display = "block";
-      signupForm.style.display = "none";
-      loginTab.style.color = "#AD28F5";
-      signupTab.style.color = "#666";
-      underline.style.left = "0";
-      underline.style.background = "#AD28F5";
-    } else {
-      loginForm.style.display = "none";
-      signupForm.style.display = "block";
-      loginTab.style.color = "#666";
-      signupTab.style.color = "#2D68F2";
-      underline.style.left = "50%";
-      underline.style.background = "#2D68F2";
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+      authDomain: "tstaff-tcf.firebaseapp.com",
+      projectId: "tstaff-tcf",
+      storageBucket: "tstaff-tcf.firebasestorage.app",
+      messagingSenderId: "1038965947691",
+      appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const overlay = document.getElementById("loginOverlay");
+    const appContent = document.getElementById("appContent");
+    const userNameEl = document.getElementById("userName");
+    const dashboard = document.getElementById("dashboard");
+    const recruitment = document.getElementById("recruitment");
+    const accountEmailEl = document.getElementById("accountEmail");
+    const accountNameEl = document.getElementById("accountName");
+    const accountStatusEl = document.getElementById("accountStatus");
+
+    function abbreviate(full) {
+      const parts = full.split(" ");
+      return parts.length > 1 ? parts[0] + " " + parts[1][0] + "." : full;
     }
-  };
 
-  // Login
-  window.login = async function() {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      document.getElementById("status").innerText = "✅ Login successful!";
-      // TODO: Redirect to dashboard
-    } catch (error) {
-      document.getElementById("status").innerText = "❌ " + error.message;
-    }
-  };
+    // Tabs
+    window.showTab = function(tab) {
+      document.getElementById("loginForm").style.display = tab === "login" ? "block" : "none";
+      document.getElementById("signupForm").style.display = tab === "signup" ? "block" : "none";
+      document.getElementById("loginTab").style.color = tab === "login" ? "#AD28F5" : "#555";
+      document.getElementById("signupTab").style.color = tab === "signup" ? "#AD28F5" : "#555";
+      document.getElementById("loginTab").style.borderBottom = tab === "login" ? "3px solid #AD28F5" : "3px solid transparent";
+      document.getElementById("signupTab").style.borderBottom = tab === "signup" ? "3px solid #AD28F5" : "3px solid transparent";
+    };
 
-  // Signup
-  window.signup = async function() {
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      document.getElementById("status").innerText = "✅ Signup successful!";
-      // TODO: Redirect to dashboard
-    } catch (error) {
-      document.getElementById("status").innerText = "❌ " + error.message;
-    }
-  };
-</script>
+    // Auth
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        overlay.style.display = "none";
+        appContent.style.display = "flex";
+
+        const ref = doc(db, "users", user.email);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data();
+          userNameEl.textContent = abbreviate(data.name);
+          accountNameEl.textContent = data.name;
+          accountEmailEl.textContent = user.email;
+          accountStatusEl.textContent = data.member ? "Member" : "Recruit";
+
+          if (data.member) {
+            dashboard.style.display = "grid";
+            recruitment.style.display = "none";
+          } else {
+            dashboard.style.display = "none";
+            recruitment.style.display = "flex";
+          }
+        } else {
+          accountNameEl.textContent = "Unknown";
+          accountEmailEl.textContent = user.email;
+          accountStatusEl.textContent = "Recruit";
+          dashboard.style.display = "none";
+          recruitment.style.display = "flex";
+        }
+      } else {
+        overlay.style.display = "flex";
+        appContent.style.display = "none";
+      }
+    });
+
+    // Login
+    window.login = async function () {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        document.getElementById("loginStatus").textContent = "Login failed: " + err.message;
+      }
+    };
+
+    // Signup
+    window.signup = async function () {
+      const name = document.getElementById("signupName").value.trim();
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", email), { name: name, member: false });
+      } catch (err) {
+        document.getElementById("signupStatus").textContent = "Signup failed: " + err.message;
+      }
+    };
+
+    // Logout
+    window.logout = async function () { await signOut(auth); };
+
+    // Collapsible Account
+    let accountOpen = false;
+    window.toggleAccount = function () {
+      const panel = document.getElementById("accountPanel");
+      const arrow = document.getElementById("accountArrow");
+      if (accountOpen) { panel.style.height = "40px"; arrow.textContent = "▲"; }
+      else { panel.style.height = "260px"; arrow.textContent = "▼"; }
+      accountOpen = !accountOpen;
+    };
+  </script>
+</body>
+</html>
