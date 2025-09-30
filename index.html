@@ -8,153 +8,185 @@
     rel="stylesheet">
   <style>
     * {
-      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
-    }
+  font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+}
 
-    body {
-      margin: 0;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+body {
+  margin: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: clamp(14px, 2.5vw, 18px);
+  line-height: 1.6;
+  background: #fafafa;
+  color: #111;
+}
 
-    #dashboard {
-      flex: 1;
-      display: none;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 10px;
-      padding: 10px;
-      background: #fafafa;
-    }
+#dashboard {
+  flex: 1;
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  padding: 10px;
+  background: #fafafa;
+}
 
-    @media (max-width:1000px) {
-      #appContent {
-        overflow-y: auto;
-      }
+@media (max-width:1000px) {
+  #appContent {
+    overflow-y: auto;
+  }
 
-      #dashboard {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-      }
+  #dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
 
-      #dashboard>div {
-        grid-row: auto !important;
-      }
-    }
+  #dashboard > div {
+    grid-row: auto !important;
+  }
+}
 
-    /* Announcements */
-    .announcement-card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 0.8rem;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-    }
+/* Announcements */
+.announcement-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
 
-    .announcement-card.important {
-      border-left: 6px solid #f82634;
-      background: #ffeaea;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
+.announcement-card.important {
+  border-left: 6px solid #f82634;
+  background: #ffeaea;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
 
-    .announcement-title {
-      font-weight: 700;
-      font-size: 1rem;
-      margin: 0 0 0.3rem 0;
-    }
+.announcement-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 0.3rem 0;
+}
 
-    .announcement-content {
-      font-size: 0.9rem;
-      color: #333;
-      margin: 0;
-    }
+.announcement-content {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 0;
+}
 
-    /* Account dropdown */
-    #accountDropdown {
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      width: 260px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      padding: 1rem;
-      display: none;
-      z-index: 1000;
-      color: #000;
-    }
+/* Account dropdown */
+#accountDropdown {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 260px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 1rem;
+  display: none;
+  z-index: 1000;
+  color: #000;
+}
 
-    #accountDropdown p {
-      margin: 0.4rem 0;
-      font-size: 0.9rem;
-      color: #000;
-    }
+#accountDropdown p {
+  margin: 0.4rem 0;
+  font-size: 0.9rem;
+  color: #000;
+}
 
-    #accountDropdown span {
-      color: #666;
-    }
+#accountDropdown span {
+  color: #666;
+}
 
-    #accountDropdown button {
-      width: 100%;
-      background: #AD28F5;
-      color: white;
-      border: none;
-      padding: 0.6rem;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 0.6rem;
-    }
+#accountDropdown button {
+  width: 100%;
+  background: #AD28F5;
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.6rem;
+}
 
-    /* Login box */
-    #loginBox {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 12px;
-      width: min(90%, 340px);
-      max-height: 90dvh;
-      box-sizing: border-box;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      overflow-y: auto;
-    }
+/* Login box */
+#loginBox {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: min(90%, 340px);
+  max-height: 90dvh;
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  font-size: 1rem;
+}
 
-    /* Status circles */
-    .status-circle {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
+/* Status circles */
+.status-circle {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
 
-    .status-red {
-      border: 2px solid #f82634;
-      background: rgba(248, 38, 52, 0.2);
-    }
+.status-red {
+  border: 2px solid #f82634;
+  background: rgba(248, 38, 52, 0.2);
+}
 
-    .status-yellow {
-      border: 2px solid #f5c32c;
-      background: rgba(245, 195, 44, 0.2);
-    }
+.status-yellow {
+  border: 2px solid #f5c32c;
+  background: rgba(245, 195, 44, 0.2);
+}
 
-    .status-green {
-      border: 2px solid #2cbf3a;
-      background: rgba(44, 191, 58, 0.2);
-    }
+.status-green {
+  border: 2px solid #2cbf3a;
+  background: rgba(44, 191, 58, 0.2);
+}
 
-    .task-item {
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
+.task-item {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
 
-    /* +2px bigger */
-    .task-strong {
-      font-weight: 700;
-    }
+.task-strong {
+  font-weight: 700;
+}
+
+/* --- Mobile tweaks --- */
+@media (max-width: 768px) {
+  body {
+    font-size: clamp(15px, 4vw, 18px);
+  }
+
+  h2, h3 {
+    font-size: clamp(18px, 5vw, 22px);
+  }
+
+  #loginBox, #accountDropdown {
+    width: 90% !important;
+    font-size: 1rem;
+  }
+
+  button, input, textarea {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+
+  #recruitment {
+    text-align: center;
+    padding: 2rem;
+    font-size: clamp(16px, 5vw, 20px);
+    line-height: 1.6;
+  }
+}
   </style>
 </head>
 
