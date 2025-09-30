@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recruitment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Raleway', system-ui, sans-serif; }
+    body { margin:0; display:flex; flex-direction:column; min-height:100vh; background:#fff; color:#222; }
+    .container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; }
+    h1 { color:#AD28F5; margin-bottom:1rem; }
+    p { max-width:600px; line-height:1.6; margin-bottom:1rem; }
+    button {
+      display:inline-flex; align-items:center; justify-content:center;
+      background:#AD28F5; color:#fff; font-weight:600; border:none;
+      padding:0.8rem 1.4rem; border-radius:8px; cursor:pointer;
+      font-size:1rem; margin-top:2rem;
+    }
+    button span { margin-left:0.6rem; font-size:1.2rem; font-family:system-ui, sans-serif !important;}
+  </style>
+</head> 
+<body>
+
+<div id="infoPage" class="container">
+  <h1>TStaff Recruitment</h1>
+  <p>Welcome! We’re looking for passionate people to help organize and run the Thailand Computer Festival.</p>
+  <p>As a staff member, you’ll be part of a fun and motivated team. We’ll need help in areas like logistics, design, communication, and more.</p>
+  <p>If you’re interested, please read carefully and click below to begin your application.</p>
+  <button onclick="startForm()">Start Form <span>→</span></button>
+</div> 
+
+<div id="formPage" class="container" style="display:none;">
+  <h1>Loading Form...</h1>
+  <iframe id="formFrame" src="" width="100%" height="600" style="border:none;max-width:800px;"></iframe>
+</div>
+
+<script>
+  function startForm(){
+    document.getElementById("infoPage").style.display = "none";
+    document.getElementById("formPage").style.display = "flex";
+    document.getElementById("formFrame").src = "https://tally.so/r/n9xeME"; // replace with your form link
+  }
+</script>
+
+</body>
+</html>
