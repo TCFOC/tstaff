@@ -8,8 +8,8 @@
     * { font-family: 'Raleway', system-ui, sans-serif; }
     body { margin:0; display:flex; flex-direction:column; min-height:100dvh; background:#fff; color:#222; }
     .container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; }
-    h1 { color:#AD28F5; margin-bottom:1rem; }
-    p { max-width:600px; line-height:1.6; margin-bottom:1rem; }
+    h1 { color:#AD28F5; margin-bottom:1rem; font-size:30px; }
+    p { max-width:600px; line-height:1.4; font-size:18px; margin-bottom:1rem; }
     button {
       display:inline-flex; align-items:center; justify-content:center;
       background:#AD28F5; color:#fff; font-weight:600; border:none;
@@ -23,14 +23,15 @@
 
 <div id="infoPage" class="container">
   <h1>TStaff Recruitment</h1>
-  <p>Welcome! We’re looking for passionate people to help organize and run the Thailand Computer Festival.</p>
-  <p>As a staff member, you’ll be part of a fun and motivated team. We’ll need help in areas like logistics, design, communication, and more.</p>
-  <p>If you’re interested, please read carefully and click below to begin your application.</p>
+  <p>Welcome! We’re looking for people who are interested in computers, technology, or anything fun to help us run the Thailand Computer Festival.</p>
+  <p>As a staff member, you’ll be part of a wonderful team. We’ll need help in many areas, with skills like communication needed for the event.</p>
+  <p>However, joining the event gives you an excellent opportunity to add to the activities side of your portfolio, as our event is the only academic contest in Thailand to be ran by students.</p>
+  <p>If you think you are a good fit, click the button below to start!</p>
   <button onclick="startForm()">Start Form <span>→</span></button>
 </div> 
 
 <div id="formPage" class="container" style="display:none;">
-  <iframe id="formFrame" src="" width="100%" height="1000px" style="border:none;max-width:800px;"></iframe>
+  <iframe id="formFrame" src="" width="80dvh" height="80dvh" style="border:none;"></iframe>
 </div>
 
 <script>
