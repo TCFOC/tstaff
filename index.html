@@ -4,189 +4,180 @@
 <head>
   <meta charset="utf-8" />
   <title>TStaff</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
-  font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
-}
+      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+    }
 
-body {
-  margin: 0;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  font-size: clamp(14px, 2.5vw, 18px);
-  line-height: 1.6;
-  background: #fafafa;
-  color: #111;
-}
+    body {
+      margin: 0;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: clamp(14px, 2.5vw, 18px);
+      line-height: 1.6;
+      background: #fafafa;
+      color: #111;
+    }
 
-#dashboard {
-  flex: 1;
-  display: none;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 10px;
-  padding: 10px;
-  background: #fafafa;
-}
+    #dashboard {
+      flex: 1;
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 10px;
+      padding: 10px;
+      background: #fafafa;
+    }
 
-@media (max-width:1000px) {
-  #appContent {
-    overflow-y: auto;
-  }
+    /* --- Announcements --- */
+    .announcement-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
 
-  #dashboard {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
+    .announcement-card.important {
+      border-left: 6px solid #f82634;
+      background: #ffeaea;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
 
-  #dashboard > div {
-    grid-row: auto !important;
-  }
-}
+    .announcement-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin: 0 0 0.3rem 0;
+    }
 
-/* Announcements */
-.announcement-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 0.8rem;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-}
+    .announcement-content {
+      font-size: 0.9rem;
+      color: #333;
+      margin: 0;
+    }
 
-.announcement-card.important {
-  border-left: 6px solid #f82634;
-  background: #ffeaea;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
+    /* --- Account dropdown --- */
+    #accountDropdown {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      width: 260px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      padding: 1rem;
+      display: none;
+      z-index: 1000;
+      color: #000;
+    }
 
-.announcement-title {
-  font-weight: 700;
-  font-size: 1rem;
-  margin: 0 0 0.3rem 0;
-}
+    #accountDropdown button {
+      width: 100%;
+      background: #AD28F5;
+      color: white;
+      border: none;
+      padding: 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.6rem;
+    }
 
-.announcement-content {
-  font-size: 0.9rem;
-  color: #333;
-  margin: 0;
-}
+    /* --- Login box --- */
+    #loginBox {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      width: min(90%, 340px);
+      max-height: 90dvh;
+      box-sizing: border-box;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      overflow-y: auto;
+      font-size: 1rem;
+    }
 
-/* Account dropdown */
-#accountDropdown {
-  position: absolute;
-  top: 60px;
-  right: 20px;
-  width: 260px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  padding: 1rem;
-  display: none;
-  z-index: 1000;
-  color: #000;
-}
+    /* --- Status circles --- */
+    .status-circle {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
 
-#accountDropdown p {
-  margin: 0.4rem 0;
-  font-size: 0.9rem;
-  color: #000;
-}
+    .status-red {
+      border: 2px solid #f82634;
+      background: rgba(248, 38, 52, 0.2);
+    }
 
-#accountDropdown span {
-  color: #666;
-}
+    .status-yellow {
+      border: 2px solid #f5c32c;
+      background: rgba(245, 195, 44, 0.2);
+    }
 
-#accountDropdown button {
-  width: 100%;
-  background: #AD28F5;
-  color: white;
-  border: none;
-  padding: 0.6rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 0.6rem;
-}
+    .status-green {
+      border: 2px solid #2cbf3a;
+      background: rgba(44, 191, 58, 0.2);
+    }
 
-/* Login box */
-#loginBox {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  width: min(90%, 340px);
-  max-height: 90dvh;
-  box-sizing: border-box;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  overflow-y: auto;
-  font-size: 1rem;
-}
+    .task-item {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
 
-/* Status circles */
-.status-circle {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 8px;
-  vertical-align: middle;
-}
+    .task-strong {
+      font-weight: 700;
+    }
 
-.status-red {
-  border: 2px solid #f82634;
-  background: rgba(248, 38, 52, 0.2);
-}
+    /* --- Collapsible To-Do arrow --- */
+    #todoHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
 
-.status-yellow {
-  border: 2px solid #f5c32c;
-  background: rgba(245, 195, 44, 0.2);
-}
+    #todoArrow {
+      transition: transform 0.3s ease;
+    }
 
-.status-green {
-  border: 2px solid #2cbf3a;
-  background: rgba(44, 191, 58, 0.2);
-}
+    #todoArrow.collapsed {
+      transform: rotate(-90deg);
+    }
 
-.task-item {
-  font-size: 18px;
-  margin-bottom: 6px;
-}
+    /* --- Mobile tweaks --- */
+    @media (max-width: 768px) {
+      body {
+        transform: scale(1.5);
+        transform-origin: top left;
+        width: 66.6667%;
+        height: 66.6667%;
+        font-size: clamp(15px, 4vw, 18px);
+      }
 
-.task-strong {
-  font-weight: 700;
-}
+      #loginBox, #accountDropdown {
+        width: 90% !important;
+      }
 
-/* --- Mobile tweaks --- */
-@media (max-width: 768px) {
-  body {
-    font-size: clamp(15px, 4vw, 18px);
-  }
+      button, input, textarea {
+        font-size: 1rem;
+        padding: 0.8rem;
+      }
 
-  h2, h3 {
-    font-size: clamp(18px, 5vw, 22px);
-  }
+      #dashboard {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
 
-  #loginBox, #accountDropdown {
-    width: 90% !important;
-    font-size: 1rem;
-  }
-
-  button, input, textarea {
-    font-size: 1rem;
-    padding: 0.8rem;
-  }
-
-  #recruitment {
-    text-align: center;
-    padding: 2rem;
-    font-size: clamp(16px, 5vw, 20px);
-    line-height: 1.6;
-  }
-}
+      #dashboard > div {
+        grid-row: auto !important;
+      }
+    }
   </style>
 </head>
 
@@ -194,11 +185,10 @@ body {
 
   <div id="appContent" style="flex:1;display:none;flex-direction:column;position:relative;">
     <!-- Top Bar -->
-    <div
-      style="background:linear-gradient(90deg,#AD28F5,#2D68F2);color:white;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;font-size:1.2rem;font-weight:600;position:relative;">
+    <div style="background:linear-gradient(90deg,#AD28F5,#2D68F2);color:white;padding:1rem 2rem;
+                display:flex;justify-content:space-between;align-items:center;font-size:1.2rem;font-weight:600;">
       <div>TStaff</div>
-      <div id="helloName" style="cursor:pointer;"><span style="color:#ddd;font-weight:400;">Hello, </span><span
-          id="userName" style="font-weight:700;">Guest</span></div>
+      <div id="helloName" style="cursor:pointer;"><span style="color:#ddd;font-weight:400;">Hello, </span><span id="userName" style="font-weight:700;">Guest</span></div>
       <div id="accountDropdown">
         <p><strong>Full Name:</strong> <span id="accountName"></span></p>
         <p><strong>Email:</strong> <span id="accountEmail"></span></p>
@@ -208,22 +198,25 @@ body {
     </div>
 
     <!-- Dashboard -->
-    <!-- Dashboard -->
     <div id="dashboard">
       <!-- To-Do -->
-      <div
-  style="grid-row:1 / span 2;background:#fff;border-radius:10px;padding:1rem;
-         box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;">
-  <h2 style="margin-top:0;color:#AD28F5;">✅ To-Do</h2>
-  <ul id="taskList"
-      style="margin:0;padding-left:1.2rem;overflow-y:auto;
-             max-height:80vh; /* 👈 cap here */
-             list-style:none;">
-    <!-- tasks will be inserted here -->
-  </ul>
-</div>
+      <div id="todoCard"
+           style="grid-row:1 / span 2;background:#fff;border-radius:10px;padding:1rem;
+                  box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;">
+        <div id="todoHeader" onclick="toggleTodoMobile()">
+          <h2 style="margin:0;color:#AD28F5;">✅ To-Do</h2>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="taskStats" style="font-size:0.9rem;color:#444;"></div>
+            <span id="todoArrow">▼</span>
+          </div>
+        </div>
 
-
+        <ul id="taskList"
+            style="margin:0;padding-left:1.2rem;overflow-y:auto;
+                   max-height:80vh;list-style:none;transition:max-height 0.3s ease;">
+          <!-- tasks go here -->
+        </ul>
+      </div>
 
       <!-- Announcements -->
       <div style="background:#fff;border-radius:10px;padding:1rem;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
@@ -232,57 +225,60 @@ body {
       </div>
 
       <!-- Suggestions -->
-      <div
-        style="background:#fff;border-radius:10px;padding:1rem;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;">
+      <div style="background:#fff;border-radius:10px;padding:1rem;box-shadow:0 4px 12px rgba(0,0,0,0.08);
+                  display:flex;flex-direction:column;">
         <h2 style="margin-top:0;color:#AD28F5;">💡 Suggestions</h2>
         <textarea id="suggestionInput" placeholder="Write your idea..."
-          style="width:100%;box-sizing:border-box;height:70px;resize:none;border:1px solid #ccc;border-radius:6px;padding:0.6rem;"></textarea>
+                  style="width:100%;box-sizing:border-box;height:70px;resize:none;
+                         border:1px solid #ccc;border-radius:6px;padding:0.6rem;"></textarea>
         <button onclick="submitSuggestion()"
-          style="width:100%;margin-top:0.5rem;background:#AD28F5;color:white;border:none;padding:0.6rem;border-radius:6px;font-weight:600;cursor:pointer;">Submit</button>
+                style="width:100%;margin-top:0.5rem;background:#AD28F5;color:white;border:none;
+                       padding:0.6rem;border-radius:6px;font-weight:600;cursor:pointer;">Submit</button>
         <p id="suggestionStatus" style="margin-top:0.5rem;font-size:0.85rem;color:#333;"></p>
       </div>
     </div>
 
-
     <!-- Recruitment -->
-    <!-- Recruitment -->
-<div id="recruitment" style="flex:1;display:none;">
-  <iframe src="https://tcfthailand.com/tstaff/recruiter" 
-          style="border:none;width:100%;height:100%;"></iframe>
-</div>
+    <div id="recruitment" style="flex:1;display:none;">
+      <iframe src="https://tcfthailand.com/tstaff/recruiter"
+              style="border:none;width:100%;height:100%;"></iframe>
+    </div>
   </div>
 
   <!-- Login Overlay -->
-  <div id="loginOverlay"
-    style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;">
+  <div id="loginOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);
+                               display:flex;align-items:center;justify-content:center;">
     <div id="loginBox">
       <div style="display:flex;margin-bottom:1rem;border-bottom:2px solid #eee;">
         <div id="loginTab" onclick="showTab('login')"
-          style="flex:1;text-align:center;padding:0.6rem;cursor:pointer;font-weight:600;color:#AD28F5;border-bottom:3px solid #AD28F5;">
-          Login</div>
+             style="flex:1;text-align:center;padding:0.6rem;cursor:pointer;font-weight:600;
+                    color:#AD28F5;border-bottom:3px solid #AD28F5;">Login</div>
         <div id="signupTab" onclick="showTab('signup')"
-          style="flex:1;text-align:center;padding:0.6rem;cursor:pointer;font-weight:600;color:#555;border-bottom:3px solid transparent;">
-          Apply</div>
+             style="flex:1;text-align:center;padding:0.6rem;cursor:pointer;font-weight:600;
+                    color:#555;border-bottom:3px solid transparent;">Apply</div>
       </div>
+
       <div id="loginForm">
         <input id="loginEmail" type="email" placeholder="Email"
-          style="width:100%;box-sizing:border-box;padding:0.8rem;margin-bottom:0.8rem;border:1px solid #ccc;border-radius:6px;">
+               style="width:100%;padding:0.8rem;margin-bottom:0.8rem;border:1px solid #ccc;border-radius:6px;">
         <input id="loginPassword" type="password" placeholder="Password"
-          style="width:100%;box-sizing:border-box;padding:0.8rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:6px;">
+               style="width:100%;padding:0.8rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:6px;">
         <button onclick="login()"
-          style="width:100%;background:#AD28F5;color:white;border:none;padding:0.8rem;border-radius:6px;font-weight:600;cursor:pointer;">Login</button>
+                style="width:100%;background:#AD28F5;color:white;border:none;padding:0.8rem;
+                       border-radius:6px;font-weight:600;cursor:pointer;">Login</button>
         <p id="loginStatus" style="margin-top:0.8rem;font-size:0.9rem;color:#d23;"></p>
       </div>
+
       <div id="signupForm" style="display:none;">
         <input id="signupName" type="text" placeholder="Full Name"
-          style="width:100%;box-sizing:border-box;padding:0.8rem;margin-bottom:0.8rem;border:1px solid #ccc;border-radius:6px;">
+               style="width:100%;padding:0.8rem;margin-bottom:0.8rem;border:1px solid #ccc;border-radius:6px;">
         <input id="signupEmail" type="email" placeholder="Email"
-          style="width:100%;box-sizing:border-box;padding:0.8rem;margin-bottom:0.8rem;border:1px solid #ccc;border-radius:6px;">
+               style="width:100%;padding:0.8rem;margin-bottom:0.8rem;border:1px solid #ccc;border-radius:6px;">
         <input id="signupPassword" type="password" placeholder="Password"
-          style="width:100%;box-sizing:border-box;padding:0.8rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:6px;">
+               style="width:100%;padding:0.8rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:6px;">
         <button onclick="signup()"
-          style="width:100%;background:#2D68F2;color:white;border:none;padding:0.8rem;border-radius:6px;font-weight:600;cursor:pointer;">Sign
-          Up</button>
+                style="width:100%;background:#2D68F2;color:white;border:none;padding:0.8rem;
+                       border-radius:6px;font-weight:600;cursor:pointer;">Sign Up</button>
         <p id="signupStatus" style="margin-top:0.8rem;font-size:0.9rem;color:#d23;"></p>
       </div>
     </div>
@@ -306,81 +302,31 @@ body {
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const appContent = document.getElementById("appContent");
-    const userNameEl = document.getElementById("userName");
-    const dashboard = document.getElementById("dashboard");
-    const recruitment = document.getElementById("recruitment");
-    const accountEmailEl = document.getElementById("accountEmail");
-    const accountNameEl = document.getElementById("accountName");
-    const accountStatusEl = document.getElementById("accountStatus");
-    const accountDropdown = document.getElementById("accountDropdown");
-    const helloName = document.getElementById("helloName");
-    const announcementsContainer = document.getElementById("announcementsContainer");
-    const suggestionInput = document.getElementById("suggestionInput");
-    const suggestionStatus = document.getElementById("suggestionStatus");
     const taskList = document.getElementById("taskList");
+    const taskStats = document.getElementById("taskStats");
+    const todoArrow = document.getElementById("todoArrow");
 
-    function abbreviate(full) {
-      const parts = full.split(" ");
-      return parts.length > 1 ? parts[0] + " " + parts[1][0] + "." : full;
-    }
-
-    // Account dropdown
-    helloName?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      accountDropdown.style.display = accountDropdown.style.display === "block" ? "none" : "block";
-    });
-    document.addEventListener("click", (e) => {
-      if (accountDropdown.style.display === "block" && !accountDropdown.contains(e.target) && !helloName.contains(e.target)) {
-        accountDropdown.style.display = "none";
-      }
-    });
-
-    // Tabs
-    window.showTab = function (tab) {
-      document.getElementById("loginForm").style.display = tab === "login" ? "block" : "none";
-      document.getElementById("signupForm").style.display = tab === "signup" ? "block" : "none";
-      document.getElementById("loginTab").style.color = tab === "login" ? "#AD28F5" : "#555";
-      document.getElementById("signupTab").style.color = tab === "signup" ? "#2D68F2" : "#555";
-      document.getElementById("loginTab").style.borderBottom = tab === "login" ? "3px solid #AD28F5" : "3px solid transparent";
-      document.getElementById("signupTab").style.borderBottom = tab === "signup" ? "3px solid #2D68F2" : "3px solid transparent";
-    };
-
-    // Load Announcements
-    function loadAnnouncements() {
-      const q = query(collection(db, "announce"), orderBy("timestamp", "desc"));
-      onSnapshot(q, (snapshot) => {
-        announcementsContainer.innerHTML = "";
-        const important = [], normal = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (data.important) important.push({ id: doc.id, ...data });
-          else normal.push({ id: doc.id, ...data });
-        });
-        [...important, ...normal].forEach(item => {
-          const date = item.timestamp?.toDate().toISOString().split("T")[0] || "Unknown Date";
-          const card = document.createElement("div");
-          card.className = "announcement-card" + (item.important ? " important" : "");
-          card.innerHTML = `<div class="announcement-title">[${date}] ${item.title}</div><p class="announcement-content">${item.content}</p>`;
-          announcementsContainer.appendChild(card);
-        });
-      });
-    }
-
-    // Load Tasks
     function loadTasks() {
       const q = query(collection(db, "tasks"), orderBy("priority", "asc"));
       onSnapshot(q, (snapshot) => {
         taskList.innerHTML = "";
         const notDone = [], done = [];
+        let redCount = 0, yellowCount = 0, greenCount = 0;
+
         snapshot.forEach(doc => {
           const data = doc.data();
-          if (data.status === "green") {
-            done.push(data);
-          } else {
-            notDone.push(data);
-          }
+          if (data.status === "green") done.push(data); else notDone.push(data);
+          if (data.status === "red") redCount++;
+          if (data.status === "yellow") yellowCount++;
+          if (data.status === "green") greenCount++;
         });
+
+        taskStats.innerHTML = `
+          <span style="color:#f82634;">● ${redCount}</span>
+          <span style="margin:0 6px;color:#f5c32c;">● ${yellowCount}</span>
+          <span style="color:#2cbf3a;">● ${greenCount}</span>
+        `;
+
         const ordered = [...notDone, ...done];
         ordered.forEach(task => {
           const li = document.createElement("li");
@@ -391,82 +337,14 @@ body {
       });
     }
 
-    // Suggestions
-    window.submitSuggestion = async function () {
-      const content = suggestionInput.value.trim();
-      if (!content) { suggestionStatus.textContent = "Please write something before submitting."; return; }
-      try {
-        await addDoc(collection(db, "suggestions"), { content: content, timestamp: serverTimestamp() });
-        suggestionStatus.style.color = "green"; suggestionStatus.textContent = "Suggestion submitted!"; suggestionInput.value = "";
-      }
-      catch (err) { suggestionStatus.style.color = "red"; suggestionStatus.textContent = "Error: " + err.message; }
+    let todoCollapsed = false;
+    window.toggleTodoMobile = function () {
+      if (window.innerWidth > 768) return;
+      todoCollapsed = !todoCollapsed;
+      const list = document.getElementById("taskList");
+      list.style.maxHeight = todoCollapsed ? "0" : "80vh";
+      todoArrow.classList.toggle("collapsed", todoCollapsed);
     };
-
-    // Auth handling
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        document.getElementById("loginOverlay").style.display = "none";
-        appContent.style.display = "flex";
-        const ref = doc(db, "users", user.email);
-        let snap = await getDoc(ref);
-        if (snap.exists()) {
-          const data = snap.data();
-          userNameEl.textContent = abbreviate(data.name);
-          accountNameEl.textContent = data.name;
-          accountEmailEl.textContent = user.email;
-          accountStatusEl.textContent = data.member ? "Member" : "Recruit";
-          if (data.member) {
-            dashboard.style.display = "grid";
-            recruitment.style.display = "none";
-            loadAnnouncements();
-            loadTasks();
-          } else {
-            dashboard.style.display = "none";
-            recruitment.style.display = "flex";
-          }
-        } else {
-          await setDoc(ref, { name: user.email, member: false });
-          userNameEl.textContent = user.email;
-          accountNameEl.textContent = user.email;
-          accountEmailEl.textContent = user.email;
-          accountStatusEl.textContent = "Recruit";
-          dashboard.style.display = "none";
-          recruitment.style.display = "flex";
-        }
-      } else {
-        appContent.style.display = "none";
-        document.getElementById("loginOverlay").style.display = "flex";
-      }
-    });
-
-    // Login
-    window.login = async function () {
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-      try { await signInWithEmailAndPassword(auth, email, password); }
-      catch (err) { document.getElementById("loginStatus").textContent = "Login failed: " + err.message; }
-    };
-
-    // Signup
-    window.signup = async function () {
-      const name = document.getElementById("signupName").value.trim();
-      const email = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPassword").value;
-      try { await createUserWithEmailAndPassword(auth, email, password); await setDoc(doc(db, "users", email), { name: name, member: false }); }
-      catch (err) { document.getElementById("signupStatus").textContent = "Signup failed: " + err.message; }
-    };
-
-    // Logout
-    window.logout = async function () {
-      await signOut(auth);
-      accountDropdown.style.display = "none";
-      document.getElementById("loginOverlay").style.display = "flex";
-    };
-
-    showTab("login");
   </script>
-
-
 </body>
-
 </html>
