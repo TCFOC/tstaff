@@ -183,11 +183,11 @@
         <div id="todoHeader" onclick="toggleTodoMobile()">
           <h2 style="margin:0;color:#AD28F5;">🛣️ Planning</h2>
           <div style="display:flex;align-items:center;gap:10px;">
-            <div id="taskStats" style="font-size:1.1rem;color:#444;"></div>
+            <div id="taskStats" style="font-size:1.3rem;color:#444;"></div>
             <span id="todoArrow">▼</span>
           </div>
         </div>
-        <ul id="taskList"></ul>
+        <ul id="taskList" style="font-size:1.3rem"></ul>
       </div>
 
       <!-- Announcements -->
@@ -449,7 +449,18 @@
     };
 
     // To-Do collapsible (mobile only)
-    let todoCollapsed = false;
+    let todoCollapsed = true;
+
+    // Collapse To-Do by default
+document.addEventListener("DOMContentLoaded", () => {
+  const list = document.getElementById("taskList");
+  const arrow = document.getElementById("todoArrow");
+  if (window.innerWidth <= 768) {
+    list.style.maxHeight = "0";
+    arrow.classList.add("collapsed");
+  }
+});
+    
     window.toggleTodoMobile = function () {
       if (window.innerWidth > 768) return; // mobile only
       todoCollapsed = !todoCollapsed;
