@@ -218,7 +218,7 @@
     <div id="empty" class="empty" style="display:none;">No tasks match your filters.</div>
   </div>
 
-  <div class="foot">Viewing only. Editing is restricted to staff via Firebase.</div>
+  <div class="foot">&copy; TStaff (TCF)</div>
 
   <!-- Firebase + App -->
   <script type="module">
@@ -404,25 +404,31 @@
     }
 
     /* ====== Events ====== */
-    function debounce(fn, ms=200){
-      let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args),ms); };
-    }
-    const onFilterChange = debounce(()=>render(), 60);
+function debounce(fn, ms=200){
+  let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args),ms); };
+}
+const onFilterChange = debounce(()=>render(), 60);
 
-    searchInput.addEventListener('input', onFilterChange);
-    deptSelect.addEventListener('change', onFilterChange);
-    prioSelect.addEventListener('change', onFilterChange);
-    statusSelect.addEventListener('change', onFilterChange);
-    dueSelect.addEventListener('change', onFilterChange);
+searchInput.addEventListener('input', onFilterChange);
+deptSelect.addEventListener('change', onFilterChange);
+prioSelect.addEventListener('change', onFilterChange);
+statusSelect.addEventListener('change', onFilterChange);
+dueSelect.addEventListener('change', onFilterChange);
 
-    clearBtn.addEventListener('click', ()=>{
-      searchInput.value=''; deptSelect.value='all'; prioSelect.value='all';
-      statusSelect.value='all'; dueSelect.value='all'; render();
-    });
-    refreshBtn.addEventListener('click', ()=>{ render(); });
+// ✅ Clear Filters Now Works
+clearBtn.addEventListener('click', ()=>{
+  searchInput.value='';
+  deptSelect.value='all';
+  prioSelect.value='all';
+  statusSelect.value='all';
+  dueSelect.value='all';
+  render();
+});
 
-    /* Start listening */
-    attachListener();
+refreshBtn.addEventListener('click', ()=>{ render(); });
+
+/* Start listening */
+attachListener();
   </script>
 </body>
 </html>
