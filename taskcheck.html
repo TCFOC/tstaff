@@ -147,7 +147,6 @@ list.sort((a,b)=>{
     c.className="card";
     if(t.important)c.style.borderLeftColor="var(--red)";
     c.innerHTML=`
-      ${t.important?`<div class="badge">IMPORTANT</div>`:""}
       <div class="pill prio-${t.priority}">${PRIO_LABELS[t.priority]}</div>
       <div class="pill dept-${t.department}">${DEPT_LABELS[t.department]||t.department}</div>
       <div class="pill">${DUE_LABELS[t.due]||t.due}</div>
