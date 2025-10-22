@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TStaff Taskcheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --brand-start:#AD28F5; /* purple */
+      --brand-end:#2D68F2;   /* blue   */
+      --bg:#f6f7fb;
+      --card:#fff;
+      --text:#111;
+      --muted:#666;
+      --border:#e6e8ef;
+
+      --dept-core:#2D68F2;         /* blue */
+      --dept-finance:#26a269;      /* green */
+      --dept-pr:#7c3aed;           /* purple */
+      --dept-supervision:#eab308;  /* yellow */
+      --dept-activities:#ef4444;   /* red */
+      --dept-recruits:#fb923c;     /* orange */
+      --dept-all:#64748b;          /* gray */
+
+      --prio-1:#ef4444; /* red    */
+      --prio-2:#fb923c; /* orange */
+      --prio-3:#eab308; /* yellow */
+
+      --status-red:#ef4444;     /* Not Done */
+      --status-orange:#fb923c;  /* In Progress */
+      --status-yellow:#22c55e;  /* Done (green dot for clarity) */
+    }
+    *{ box-sizing:border-box; font-family:'IBM Plex Sans Thai',system-ui,sans-serif; }
+
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      min-height:100dvh; display:flex; flex-direction:column;
+    }
+
+    /* Top bar */
+    .topbar{
+      background:linear-gradient(90deg,var(--brand-start),var(--brand-end));
+      color:#fff; padding:.9rem 1.2rem;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:10;
+      box-shadow:0 6px 18px rgba(0,0,0,.12);
+    }
+    .title{ font-weight:700; letter-spacing:.2px; }
+    .subtitle{ opacity:.9; font-weight:500; font-size:.95rem; }
+
+    /* Filters */
+    .filters{
+      display:grid; gap:.6rem; grid-template-columns: 1fr repeat(4, minmax(160px, 230px));
+      padding: 12px 14px;
+    }
+    @media (max-width: 1000px){
+      .filters{ grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width: 640px){
+      .filters{ grid-template-columns:1fr; }
+    }
+
+    .input, .select, .btn{
+      background:var(--card); border:1px solid var(--border); color:var(--text);
+      padding:.7rem .9rem; border-radius:10px; outline:none;
+      transition:border .2s ease, box-shadow .2s ease, transform .15s ease, background .2s ease, color .2s ease;
+    }
+    .input:focus, .select:focus{
+      border-color: var(--brand-end); box-shadow:0 0 0 4px rgba(45,104,242,.12);
+    }
+    .input:hover, .select:hover{ transform: translateY(-1px); }
+
+    .filters-row-end{
+      display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; grid-column:1/-1;
+    }
+    .btn{ cursor:pointer; font-weight:600; }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.08); }
+    .btn-primary{
+      background:linear-gradient(90deg,var(--brand-start),var(--brand-end)); color:white; border:none;
+    }
+
+    /* Grid of cards */
+    .wrap{ padding: 6px 12px 24px; }
+    .grid{
+      display:grid; gap:12px; grid-template-columns: repeat(3, minmax(260px, 1fr));
+    }
+    @media (max-width: 1100px){ .grid{ grid-template-columns: repeat(2, minmax(250px,1fr)); } }
+    @media (max-width: 700px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      background:var(--card); border:1px solid var(--border); border-left:6px solid transparent;
+      border-radius:14px; padding:14px; position:relative;
+      box-shadow:0 10px 24px rgba(0,0,0,.06);
+      transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, opacity .2s ease;
+      opacity:0; transform: translateY(6px);
+      animation: fadeUp .35s ease forwards;
+    }
+    .card:hover{ transform:translateY(-2px); box-shadow:0 16px 28px rgba(0,0,0,.10); }
+
+    @keyframes fadeUp{
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    .important-badge{
+      position:absolute; top:10px; right:10px; font-size:.75rem; font-weight:700;
+      color:#fff; background:#ef4444; padding:.25rem .5rem; border-radius:999px;
+      box-shadow:0 8px 16px rgba(239,68,68,.2);
+    }
+
+    .row-top{ display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.35rem; }
+    .row-status{ display:flex; align-items:center; gap:.5rem; margin-bottom:.4rem; color:#333; font-weight:600; }
+    .name{ font-size:1.05rem; font-weight:700; margin:0; }
+
+    .pill{
+      border-radius:999px; padding:.25rem .55rem; font-size:.8rem; font-weight:600; border:1px solid var(--border);
+      background:#fff; color:#333;
+    }
+    /* Department pills */
+    .dept-core{ color:#fff; background:var(--dept-core); border-color:transparent; }
+    .dept-finance{ color:#fff; background:var(--dept-finance); border-color:transparent; }
+    .dept-pr{ color:#fff; background:var(--dept-pr); border-color:transparent; }
+    .dept-supervision{ background:#fff3bf; color:#6b5800; border-color:#fde68a; }
+    .dept-activities{ color:#fff; background:var(--dept-activities); border-color:transparent; }
+    .dept-recruits{ color:#fff; background:var(--dept-recruits); border-color:transparent; }
+    .dept-all{ background:#e2e8f0; color:#0f172a; border-color:#cbd5e1; }
+
+    /* Priority pills (High/Med/Low) */
+    .prio-1{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }  /* High */
+    .prio-2{ background:#ffedd5; color:#9a3412; border-color:#fed7aa; }  /* Medium */
+    .prio-3{ background:#fef3c7; color:#854d0e; border-color:#fde68a; }  /* Low   */
+
+    .status-dot{
+      width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px; border:2px solid #fff;
+      box-shadow:0 0 0 2px var(--border);
+    }
+    .st-red{ background:var(--status-red); }
+    .st-orange{ background:var(--status-orange); }
+    .st-yellow{ background:var(--status-yellow); }
+
+    .empty{
+      border:2px dashed var(--border); border-radius:14px; padding:20px; text-align:center; color:#666;
+      background:linear-gradient(180deg,#fff, #fafbff);
+    }
+
+    .foot{ padding:10px 14px; color:#667085; font-size:.85rem; }
+
+    /* Mobile sizing (gentle boost, not huge) */
+    html { font-size: 16px; }
+    @media (max-width: 768px){
+      html { font-size: clamp(16px, 2.8vw, 18px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div>
+      <div class="title">TStaff Taskcheck</div>
+      <div class="subtitle">Live view of tasks (read-only)</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input id="searchInput" class="input" type="search" placeholder="Search tasks…" />
+
+    <!-- Department (stored lowercase; UI shows formal name) -->
+    <select id="deptSelect" class="select" aria-label="Department">
+      <option value="all">Department: All</option>
+      <option value="allmembers">All Members</option>
+      <option value="core">Core Team</option>
+      <option value="finance">Finances & Sponsors</option>
+      <option value="pr">Public Relations</option>
+      <option value="supervision">Student Supervision</option>
+      <option value="activities">Activities</option>
+      <option value="recruits">New Recruits</option>
+    </select>
+
+    <!-- Priority (stored int; UI shows High/Med/Low) -->
+    <select id="prioSelect" class="select" aria-label="Priority">
+      <option value="all">Priority: All</option>
+      <option value="1">High</option>
+      <option value="2">Medium</option>
+      <option value="3">Low</option>
+    </select>
+
+    <!-- Status (stored red|orange|yellow; UI shows words) -->
+    <select id="statusSelect" class="select" aria-label="Status">
+      <option value="all">Status: All</option>
+      <option value="red">Not Done</option>
+      <option value="orange">In Progress</option>
+      <option value="yellow">Done</option>
+    </select>
+
+    <!-- Due (stored int codes; UI shows words) -->
+    <select id="dueSelect" class="select" aria-label="Due">
+      <option value="all">Due: All</option>
+      <option value="10">October</option>
+      <option value="111">Early November</option>
+      <option value="112">Late November</option>
+      <option value="121">Early December</option>
+      <option value="122">Late December</option>
+      <option value="1">January</option>
+    </select>
+
+    <div class="filters-row-end">
+      <button id="clearBtn" class="btn">Clear filters</button>
+      <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+      <span id="countInfo" class="muted" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="wrap">
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">No tasks match your filters.</div>
+  </div>
+
+  <div class="foot">Viewing only. Editing is restricted to staff via Firebase.</div>
+
+  <!-- Firebase + App -->
+  <script type="module">
+    /* Firebase SDKs */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    /* === Firebase Config (existing TStaff project) === */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+      authDomain: "tstaff-tcf.firebaseapp.com",
+      projectId: "tstaff-tcf",
+      storageBucket: "tstaff-tcf.firebasestorage.app",
+      messagingSenderId: "1038965947691",
+      appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    /* ====== UI elements ====== */
+    const searchInput = document.getElementById('searchInput');
+    const deptSelect  = document.getElementById('deptSelect');
+    const prioSelect  = document.getElementById('prioSelect');
+    const statusSelect= document.getElementById('statusSelect');
+    const dueSelect   = document.getElementById('dueSelect');
+    const clearBtn    = document.getElementById('clearBtn');
+    const refreshBtn  = document.getElementById('refreshBtn');
+    const grid        = document.getElementById('grid');
+    const emptyEl     = document.getElementById('empty');
+    const countInfo   = document.getElementById('countInfo');
+
+    /* ====== Labels & helpers ====== */
+    const DUE_LABELS = { 10:"October", 111:"Early November", 112:"Late November", 121:"Early December", 122:"Late December", 1:"January" };
+    const STATUS_LABELS = { red:"Not Done", orange:"In Progress", yellow:"Done" };
+    const PRIO_LABELS = { 1:"High", 2:"Medium", 3:"Low" };
+    const DEPT_LABELS = {
+      allmembers:"All Members", core:"Core Team", finance:"Finances & Sponsors", pr:"Public Relations",
+      supervision:"Student Supervision", activities:"Activities", recruits:"New Recruits"
+    };
+
+    function normalizeDept(depRaw){
+      const d = String(depRaw||"").toLowerCase().replace(/\s+/g,'');
+      if (["all","allmembers"].includes(d)) return "allmembers";
+      if (["core","coreteam"].includes(d)) return "core";
+      if (["finance","financesandsponsors","finances","sponsors"].includes(d)) return "finance";
+      if (["pr","publicrelations"].includes(d)) return "pr";
+      if (["studentsupervision","supervision"].includes(d)) return "supervision";
+      if (["activities"].includes(d)) return "activities";
+      if (["newrecruits","recruits"].includes(d)) return "recruits";
+      return d || "allmembers";
+    }
+
+    function deptClass(dep){
+      switch(dep){
+        case 'core': return 'dept-core';
+        case 'finance': return 'dept-finance';
+        case 'pr': return 'dept-pr';
+        case 'supervision': return 'dept-supervision';
+        case 'activities': return 'dept-activities';
+        case 'recruits': return 'dept-recruits';
+        case 'allmembers': default: return 'dept-all';
+      }
+    }
+    function prioClass(p){
+      if (p === 1) return 'prio-1';
+      if (p === 2) return 'prio-2';
+      return 'prio-3';
+    }
+    function statusDotClass(s){
+      if (s === 'red') return 'st-red';
+      if (s === 'orange') return 'st-orange';
+      return 'st-yellow';
+    }
+    function escapeHTML(str){
+      return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
+    }
+
+    /* ====== State & Live data ====== */
+    let rawTasks = [];     // as received from Firestore
+    let unsubscribe = null;
+
+    function attachListener(){
+      if (unsubscribe) { unsubscribe(); }
+      const colRef = collection(db, "taskcheck");
+      unsubscribe = onSnapshot(colRef, (snap) => {
+        rawTasks = [];
+        snap.forEach(doc => {
+          const d = doc.data();
+          // normalize types (priority/due might come as string from console inserts)
+          const t = {
+            id: doc.id,
+            name: String(d.name || '').trim(),
+            department: normalizeDept(d.department),
+            priority: typeof d.priority === 'number' ? d.priority : parseInt(d.priority,10),
+            status: (d.status || 'red').toLowerCase(),
+            due: typeof d.due === 'number' ? d.due : parseInt(d.due,10),
+            important: !!d.important
+          };
+          rawTasks.push(t);
+        });
+        render();
+      }, (err) => {
+        console.error("Firestore onSnapshot error:", err);
+      });
+    }
+
+    /* ====== Filtering + Sorting ====== */
+    function applyFilters(tasks){
+      const q = searchInput.value.trim().toLowerCase();
+      const fDept = deptSelect.value;        // normalized key or "all"
+      const fPrio = prioSelect.value;        // "all" or "1|2|3"
+      const fStat = statusSelect.value;      // "all" or "red|orange|yellow"
+      const fDue  = dueSelect.value;         // "all" or code
+
+      let res = tasks.filter(t => {
+        if (q && !t.name.toLowerCase().includes(q)) return false;
+
+        if (fDept !== 'all') {
+          // Special rule: "all members" appears on all team filters
+          if (t.department !== fDept && t.department !== 'allmembers') return false;
+        }
+        if (fPrio !== 'all' && t.priority !== Number(fPrio)) return false;
+        if (fStat !== 'all' && t.status !== fStat) return false;
+        if (fDue  !== 'all' && t.due !== Number(fDue)) return false;
+
+        return true;
+      });
+
+      // Sort: IMPORTANT desc → DUE asc → PRIORITY asc → NAME asc
+      res.sort((a,b)=>{
+        if (a.important !== b.important) return a.important ? -1 : 1;
+        if (a.due !== b.due) return (a.due ?? 9999) - (b.due ?? 9999);
+        if (a.priority !== b.priority) return (a.priority ?? 99) - (b.priority ?? 99);
+        return a.name.localeCompare(b.name, 'th');
+      });
+
+      return res;
+    }
+
+    /* ====== Rendering ====== */
+    function render(){
+      const tasks = applyFilters(rawTasks);
+      grid.innerHTML = '';
+
+      if (!tasks.length){
+        emptyEl.style.display = 'block';
+        countInfo.textContent = '0 tasks';
+        return;
+      }
+      emptyEl.style.display = 'none';
+      countInfo.textContent = `${tasks.length} task${tasks.length>1?'s':''}`;
+
+      tasks.forEach((t, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        if (t.important) card.style.borderLeftColor = '#ef4444';
+        card.style.animationDelay = `${Math.min(idx, 10) * 35}ms`;
+
+        const dueLabel = DUE_LABELS[t.due] ?? String(t.due);
+        const prioLabel = PRIO_LABELS[t.priority] ?? `P${t.priority}`;
+        const statusLabel = STATUS_LABELS[t.status] ?? t.status;
+        const deptLabel = DEPT_LABELS[t.department] ?? t.department;
+
+        card.innerHTML = `
+          ${t.important ? '<div class="important-badge">IMPORTANT</div>' : ''}
+
+          <div class="row-top">
+            <span class="pill ${prioClass(t.priority)}">${escapeHTML(prioLabel)}</span>
+            <span class="pill ${deptClass(t.department)}">${escapeHTML(deptLabel)}</span>
+            <span class="pill">${escapeHTML(dueLabel)}</span>
+          </div>
+
+          <div class="row-status">
+            <span class="status-dot ${statusDotClass(t.status)}" aria-hidden="true"></span>
+            <span>${escapeHTML(statusLabel)}</span>
+          </div>
+
+          <p class="name">${escapeHTML(t.name)}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /* ====== Events ====== */
+    function debounce(fn, ms=200){
+      let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args),ms); };
+    }
+    const onFilterChange = debounce(()=>render(), 60);
+
+    searchInput.addEventListener('input', onFilterChange);
+    deptSelect.addEventListener('change', onFilterChange);
+    prioSelect.addEventListener('change', onFilterChange);
+    statusSelect.addEventListener('change', onFilterChange);
+    dueSelect.addEventListener('change', onFilterChange);
+
+    clearBtn.addEventListener('click', ()=>{
+      searchInput.value=''; deptSelect.value='all'; prioSelect.value='all';
+      statusSelect.value='all'; dueSelect.value='all'; render();
+    });
+    refreshBtn.addEventListener('click', ()=>{ render(); });
+
+    /* Start listening */
+    attachListener();
+  </script>
+</body>
+</html>
