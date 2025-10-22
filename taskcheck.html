@@ -121,12 +121,22 @@ function render(){
     return true;
   });
 
-  list.sort((a,b)=>{
-    if(a.important!=b.important)return a.important?-1:1;
-    if(a.due!=b.due)return a.due-b.due;
-    if(a.priority!=b.priority)return a.priority-b.priority;
-    return a.name.localeCompare(b.name);
-  });
+  function dueRank(d){
+  if (d === 10) return 1;     // Oct
+  if (d === 111) return 2;    // Early Nov
+  if (d === 112) return 3;    // Late Nov
+  if (d === 121) return 4;    // Early Dec
+  if (d === 122) return 5;    // Late Dec
+  if (d === 1) return 6;      // January
+  return 999;                 // Unknown goes to bottom
+}
+
+list.sort((a,b)=>{
+  if (a.important !== b.important) return a.important ? -1 : 1;
+  if (a.due !== b.due) return dueRank(a.due) - dueRank(b.due);
+  if (a.priority !== b.priority) return a.priority - b.priority;
+  return a.name.localeCompare(b.name, 'th');
+});
 
   grid.innerHTML="";
   if(!list.length){empty.style.display="block";return;}
