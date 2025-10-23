@@ -213,9 +213,10 @@
 
     let res = tasks.filter(t=>{
       if(q && !t.name.toLowerCase().includes(q)) return false;
-if(fd !== "all"){
-  if(t.department !== fd && t.department !== "allmembers") return false;
-}
+      if(fd !== "all"){
+        if(fd === "recruits" && t.department !== fd) return false;
+        if(fd !== "recruits" && t.department !== fd && t.department !== "allmembers") return false;
+      }
       if(fp !== "all" && t.priority !== Number(fp)) return false;
       if(fs !== "all" && t.status !== fs) return false;
       if(fdue !== "all" && t.due !== Number(fdue)) return false;
