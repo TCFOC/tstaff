@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TStaff Task Poster Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand-start:#AD28F5;
+      --brand-end:#2D68F2;
+      --card: #fff;
+      --bg: #f4f4f4;
+      --text: #111;
+      --prio-1:#ef4444;
+      --prio-2:#fb923c;
+      --prio-3:#eab308;
+      --dept-all:#64748b;
+      --dept-core:#2D68F2;
+      --dept-finance:#26a269;
+      --dept-pr:#7c3aed;
+      --dept-supervision:#eab308;
+      --dept-activities:#ef4444;
+      --dept-recruits:#fb923c;
+      --dept-cc:#9c6b3c;
+      --status-red:#ef4444;
+      --status-yellow:#f5c32c;
+      --status-green:#22c55e;
+    }
+    *{ font-family:'IBM Plex Sans Thai',sans-serif; }
+    body{
+      text-align:center;
+      padding:20px;
+      background:var(--bg);
+    }
+    canvas{
+      background:#fff;
+      border-radius:16px;
+      margin-top:20px;
+      max-width:95vw;
+      box-shadow:0 10px 25px rgba(0,0,0,.18);
+    }
+    select,input,button{
+      padding:10px;
+      font-size:18px;
+      margin:6px;
+      border-radius:8px;
+      border:1px solid #ccc;
+    }
+    button{
+      background:var(--brand-start);
+      color:white;
+      cursor:pointer;
+      border:none;
+      font-weight:700;
+    }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+      authDomain: "tstaff-tcf.firebaseapp.com",
+      projectId: "tstaff-tcf",
+      storageBucket: "tstaff-tcf.firebasestorage.app",
+      messagingSenderId: "1038965947691",
+      appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const DUE_LABELS = {
+      10:"October",
+      111:"Early November",
+      112:"Late November",
+      121:"Early December",
+      122:"Late December",
+      1:"January"
+    };
+    const STATUS_LABELS = {
+      red:"Not Done",
+      yellow:"In Progress",
+      green:"Done"
+    };
+    const PRIORITY_LABELS = ["High","Medium","Low"];
+
+    const DEPT_LABELS = {
+      allmembers:"All Members",
+      core:"Core Team",
+      finance:"Finance",
+      pr:"Public Relations",
+      supervision:"Student Supervision",
+      activities:"Activities",
+      recruits:"New Recruits",
+      cc:"Creative Contest"
+    };
+
+    function pillColor(type,val){
+      return `var(--${type}-${val})`;
+    }
+
+    function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+      const words=text.split(' ');
+      let line='';
+      for(let i=0;i<words.length;i++){
+        const test=line+words[i]+' ';
+        if(ctx.measureText(test).width>maxWidth){
+          ctx.fillText(line,x,y);
+          line=words[i]+' ';
+          y+=lineHeight;
+        } else line=test;
+      }
+      ctx.fillText(line,x,y);
+      return y;
+    }
+
+    async function loadTasks(){
+      const sel=document.getElementById("taskSelect");
+      sel.innerHTML="<option disabled selected>Loading…</option>";
+      const snap=await getDocs(collection(db,"taskcheck"));
+      sel.innerHTML="";
+      snap.forEach(d=>{
+        const o=document.createElement("option");
+        o.value=d.id;
+        o.textContent=d.data().name;
+        sel.appendChild(o);
+      });
+    }
+
+    async function drawPoster(){
+      const id=document.getElementById("taskSelect").value;
+      const l1=document.getElementById("line1").value;
+      const l2=document.getElementById("line2").value;
+      if(!id)return alert("Pick a task first!");
+
+      const c=document.getElementById("poster");
+      const ctx=c.getContext("2d");
+      ctx.clearRect(0,0,c.width,c.height);
+
+      const snap=await getDoc(doc(db,"taskcheck",id));
+      const t=snap.data();
+
+      // Background
+      ctx.fillStyle="#fff";
+      ctx.fillRect(0,0,c.width,c.height);
+
+      // ✅ Title bar (Taskcheck style)
+      ctx.fillStyle=ctx.createLinearGradient(0,0,c.width,0);
+      ctx.fillStyle = "#AD28F5";
+      ctx.fillRect(0,0,c.width,110);
+      ctx.fillStyle="#fff";
+      ctx.font="700 56px 'IBM Plex Sans Thai'";
+      ctx.textAlign="left";
+      ctx.fillText("TStaff",60,78);
+
+      // ✅ Pills
+      const prio=PRIORITY_LABELS[t.priority-1] || "";
+      const dept=DEPT_LABELS[t.department] || t.department;
+      const due=DUE_LABELS[t.due] || t.due;
+
+      let X=100, Y=200;
+      ctx.font="600 48px 'IBM Plex Sans Thai'";
+      function pill(txt,color){
+        ctx.fillStyle=color;
+        const w=ctx.measureText(txt).width+50;
+        ctx.fillRect(X,Y-42,w,60);
+        ctx.fillStyle="#fff";
+        ctx.fillText(txt,X+25,Y);
+        X+=w+20;
+      }
+      pill(prio,pillColor("prio",t.priority));
+      pill(dept,pillColor("dept",t.department));
+      pill(due,"#555");
+
+      // ✅ Task name BELOW pills
+      Y+=90;
+      ctx.fillStyle="#000";
+      ctx.font="700 74px 'IBM Plex Sans Thai'";
+      Y = wrapText(ctx,t.name,100,Y,c.width-200,84);
+
+      // ✅ Status line
+      Y+=70;
+      ctx.font="500 50px 'IBM Plex Sans Thai'";
+      ctx.fillText("Status: "+STATUS_LABELS[t.status],100,Y);
+
+      // ✅ Score / bottom text (LEFT aligned)
+      ctx.font="600 60px 'IBM Plex Sans Thai'";
+      if(l1) ctx.fillText(l1,100,c.height-200);
+      if(l2) ctx.fillText(l2,100,c.height-130);
+    }
+
+    function downloadPoster(){
+      const link=document.createElement("a");
+      link.download="tstaff-task-poster.png";
+      link.href=document.getElementById("poster").toDataURL("image/png");
+      link.click();
+    }
+
+    window.onload=loadTasks;
+    window.drawPoster=drawPoster;
+    window.downloadPoster=downloadPoster;
+  </script>
+</head>
+
+<body>
+  <h2>📌 TStaff Task Poster Generator</h2>
+
+  <select id="taskSelect"></select><br>
+  <input id="line1" placeholder="Bottom text line 1 (e.g. Worth 2 pts)">
+  <input id="line2" placeholder="Bottom text line 2">
+
+  <br><br>
+  <button onclick="drawPoster()">✅ Generate</button>
+  <button onclick="downloadPoster()">⬇️ Download</button>
+
+  <br><br>
+  <canvas id="poster" width="1920" height="1440"></canvas>
+</body>
+</html>
