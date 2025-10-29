@@ -1,223 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>TStaff Task Poster Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --brand-start:#AD28F5;
-      --brand-end:#2D68F2;
-      --card: #fff;
-      --bg: #f4f4f4;
-      --text: #111;
-      --prio-1:#ef4444;
-      --prio-2:#fb923c;
-      --prio-3:#eab308;
-      --dept-all:#64748b;
-      --dept-core:#2D68F2;
-      --dept-finance:#26a269;
-      --dept-pr:#7c3aed;
-      --dept-supervision:#eab308;
-      --dept-activities:#ef4444;
-      --dept-recruits:#fb923c;
-      --dept-cc:#9c6b3c;
-      --status-red:#ef4444;
-      --status-yellow:#f5c32c;
-      --status-green:#22c55e;
+    body {
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      background: #f6f7fb;
+      text-align: center;
+      padding: 16px;
     }
-    *{ font-family:'IBM Plex Sans Thai',sans-serif; }
-    body{
-      text-align:center;
-      padding:20px;
-      background:var(--bg);
-    }
-    canvas{
+    #poster {
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+      border: 2px solid #ddd;
       background:#fff;
-      border-radius:16px;
-      margin-top:20px;
-      max-width:95vw;
-      box-shadow:0 10px 25px rgba(0,0,0,.18);
+      margin-top: 20px;
     }
-    select,input,button{
-      padding:10px;
-      font-size:18px;
-      margin:6px;
-      border-radius:8px;
-      border:1px solid #ccc;
+    input, select, textarea, button {
+      padding: 10px;
+      font-size: 18px;
+      margin: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-family: inherit;
     }
-    button{
-      background:var(--brand-start);
-      color:white;
-      cursor:pointer;
-      border:none;
-      font-weight:700;
+    textarea {
+      width: 90%;
+      height: 100px;
+      resize: none;
     }
+    button {
+      background: #AD28F5;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { opacity: .9; }
   </style>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
-      authDomain: "tstaff-tcf.firebaseapp.com",
-      projectId: "tstaff-tcf",
-      storageBucket: "tstaff-tcf.firebasestorage.app",
-      messagingSenderId: "1038965947691",
-      appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const DUE_LABELS = {
-      10:"October",
-      111:"Early November",
-      112:"Late November",
-      121:"Early December",
-      122:"Late December",
-      1:"January"
-    };
-    const STATUS_LABELS = {
-      red:"Not Done",
-      yellow:"In Progress",
-      green:"Done"
-    };
-    const PRIORITY_LABELS = ["High","Medium","Low"];
-
-    const DEPT_LABELS = {
-      allmembers:"All Members",
-      core:"Core Team",
-      finance:"Finance",
-      pr:"Public Relations",
-      supervision:"Student Supervision",
-      activities:"Activities",
-      recruits:"New Recruits",
-      cc:"Creative Contest"
-    };
-
-    function pillColor(type,val){
-      return `var(--${type}-${val})`;
-    }
-
-    function wrapText(ctx,text,x,y,maxWidth,lineHeight){
-      const words=text.split(' ');
-      let line='';
-      for(let i=0;i<words.length;i++){
-        const test=line+words[i]+' ';
-        if(ctx.measureText(test).width>maxWidth){
-          ctx.fillText(line,x,y);
-          line=words[i]+' ';
-          y+=lineHeight;
-        } else line=test;
-      }
-      ctx.fillText(line,x,y);
-      return y;
-    }
-
-    async function loadTasks(){
-      const sel=document.getElementById("taskSelect");
-      sel.innerHTML="<option disabled selected>Loading…</option>";
-      const snap=await getDocs(collection(db,"taskcheck"));
-      sel.innerHTML="";
-      snap.forEach(d=>{
-        const o=document.createElement("option");
-        o.value=d.id;
-        o.textContent=d.data().name;
-        sel.appendChild(o);
-      });
-    }
-
-    async function drawPoster(){
-      const id=document.getElementById("taskSelect").value;
-      const l1=document.getElementById("line1").value;
-      const l2=document.getElementById("line2").value;
-      if(!id)return alert("Pick a task first!");
-
-      const c=document.getElementById("poster");
-      const ctx=c.getContext("2d");
-      ctx.clearRect(0,0,c.width,c.height);
-
-      const snap=await getDoc(doc(db,"taskcheck",id));
-      const t=snap.data();
-
-      // Background
-      ctx.fillStyle="#fff";
-      ctx.fillRect(0,0,c.width,c.height);
-
-      // ✅ Title bar (Taskcheck style)
-      ctx.fillStyle=ctx.createLinearGradient(0,0,c.width,0);
-      ctx.fillStyle = "#AD28F5";
-      ctx.fillRect(0,0,c.width,110);
-      ctx.fillStyle="#fff";
-      ctx.font="700 56px 'IBM Plex Sans Thai'";
-      ctx.textAlign="left";
-      ctx.fillText("TStaff",60,78);
-
-      // ✅ Pills
-      const prio=PRIORITY_LABELS[t.priority-1] || "";
-      const dept=DEPT_LABELS[t.department] || t.department;
-      const due=DUE_LABELS[t.due] || t.due;
-
-      let X=100, Y=200;
-      ctx.font="600 48px 'IBM Plex Sans Thai'";
-      function pill(txt,color){
-        ctx.fillStyle=color;
-        const w=ctx.measureText(txt).width+50;
-        ctx.fillRect(X,Y-42,w,60);
-        ctx.fillStyle="#fff";
-        ctx.fillText(txt,X+25,Y);
-        X+=w+20;
-      }
-      pill(prio,pillColor("prio",t.priority));
-      pill(dept,pillColor("dept",t.department));
-      pill(due,"#555");
-
-      // ✅ Task name BELOW pills
-      Y+=90;
-      ctx.fillStyle="#000";
-      ctx.font="700 74px 'IBM Plex Sans Thai'";
-      Y = wrapText(ctx,t.name,100,Y,c.width-200,84);
-
-      // ✅ Status line
-      Y+=70;
-      ctx.font="500 50px 'IBM Plex Sans Thai'";
-      ctx.fillText("Status: "+STATUS_LABELS[t.status],100,Y);
-
-      // ✅ Score / bottom text (LEFT aligned)
-      ctx.font="600 60px 'IBM Plex Sans Thai'";
-      if(l1) ctx.fillText(l1,100,c.height-200);
-      if(l2) ctx.fillText(l2,100,c.height-130);
-    }
-
-    function downloadPoster(){
-      const link=document.createElement("a");
-      link.download="tstaff-task-poster.png";
-      link.href=document.getElementById("poster").toDataURL("image/png");
-      link.click();
-    }
-
-    window.onload=loadTasks;
-    window.drawPoster=drawPoster;
-    window.downloadPoster=downloadPoster;
-  </script>
 </head>
 
 <body>
   <h2>📌 TStaff Task Poster Generator</h2>
 
-  <select id="taskSelect"></select><br>
-  <input id="line1" placeholder="Bottom text line 1 (e.g. Worth 2 pts)">
-  <input id="line2" placeholder="Bottom text line 2">
+  <select id="taskSelect" style="min-width:300px;"></select><br>
+  <input type="text" id="line1" placeholder="Bottom Line 1 (eg. Worth 2 pts)">
+  <input type="text" id="line2" placeholder="Bottom Line 2">
+  <textarea id="descInput" placeholder="Description (optional)"></textarea>
+  <br>
 
-  <br><br>
-  <button onclick="drawPoster()">✅ Generate</button>
-  <button onclick="downloadPoster()">⬇️ Download</button>
+  <button onclick="drawPoster()">✅ Generate Poster</button>
+  <button onclick="downloadPoster()">⬇️ Download Poster</button>
 
-  <br><br>
   <canvas id="poster" width="1920" height="1440"></canvas>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+  authDomain:"tstaff-tcf.firebaseapp.com",
+  projectId:"tstaff-tcf",
+  storageBucket:"tstaff-tcf.firebasestorage.app",
+  messagingSenderId:"1038965947691",
+  appId:"1:1038965947691:web:8a2f21a6424b82c14ad96e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const DUE_LABELS = {10:"October",111:"Early November",112:"Late November",121:"Early December",122:"Late December",1:"January"};
+const PRIORITY_LABELS = {1:"High",2:"Medium",3:"Low"};
+const PRIO_COLORS = {1:"#ef4444",2:"#fb923c",3:"#eab308"};
+const STATUS_LABELS = {red:"Not Done",yellow:"In Progress",green:"Done"};
+
+const DEPT_LABELS = {
+  core:"Core Team", finance:"Finance & Sponsors", pr:"Public Relations",
+  supervision:"Student Supervision", activities:"Activities",
+  recruits:"New Recruits", cc:"Creative Contest", allmembers:"All Members"
+};
+const DEPT_COLORS = {
+  core:["#2D68F2","#fff"], finance:["#26a269","#fff"],
+  pr:["#7c3aed","#fff"], supervision:["#eab308","#fff"],
+  activities:["#ef4444","#fff"], recruits:["#fb923c","#fff"],
+  cc:["#9c6b3c","#fff"], allmembers:["#64748b","#fff"]
+};
+
+CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
+  r=Math.min(r,w/2,h/2);
+  this.beginPath();
+  this.moveTo(x+r,y);
+  this.lineTo(x+w-r,y);
+  this.quadraticCurveTo(x+w,y,x+w,y+r);
+  this.lineTo(x+w,y+h-r);
+  this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  this.lineTo(x+r,y+h);
+  this.quadraticCurveTo(x,y+h,x,y+h-r);
+  this.lineTo(x,y+r);
+  this.quadraticCurveTo(x,y,x+r,y);
+  this.closePath();
+};
+
+function pill(ctx,x,y,text,bg,fg){
+  ctx.font="bold 48px 'IBM Plex Sans Thai'";
+  const pad=28, h=64;
+  const w = ctx.measureText(text).width + pad*2;
+  ctx.fillStyle=bg;
+  ctx.roundRect(x,y,w,h,32);
+  ctx.fill();
+  ctx.fillStyle=fg;
+  ctx.textBaseline="middle";
+  ctx.fillText(text,x+pad,y+h/2);
+  return x+w+20;
+}
+
+function wrap(ctx,text,x,y,max,line){
+  const words=text.split(" ");
+  let curr="";
+  for(const w of words){
+    const test=curr+w+" ";
+    if(ctx.measureText(test).width > max){
+      ctx.fillText(curr,x,y);
+      y+=line;
+      curr=w+" ";
+    } else curr=test;
+  }
+  ctx.fillText(curr,x,y);
+  return y;
+}
+
+async function loadTasks(){
+  const sel = document.getElementById("taskSelect");
+  sel.innerHTML = "<option disabled>Loading...</option>";
+
+  const snap = await getDocs(collection(db,"taskcheck"));
+  sel.innerHTML = "";
+
+  // ✅ Convert to array so we can sort
+  const list = [];
+  snap.forEach(doc => {
+    const data = doc.data();
+    list.push({ id: doc.id, name: data.name || "Unnamed Task" });
+  });
+
+  // ✅ Alphabetical sorting (Thai-aware)
+  list.sort((a, b) => a.name.localeCompare(b.name, 'th'));
+
+  // ✅ Populate dropdown
+  list.forEach(task => {
+    const o = document.createElement("option");
+    o.value = task.id;
+    o.textContent = task.name;
+    sel.appendChild(o);
+  });
+}
+
+async function drawPoster(){
+  const id=document.getElementById("taskSelect").value;
+  if(!id) return alert("Select a task!");
+
+  const snap=await getDoc(doc(db,"taskcheck",id));
+  if(!snap.exists()) return;
+  const t=snap.data();
+
+  const c=document.getElementById("poster");
+  const ctx=c.getContext("2d");
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,c.width,c.height);
+
+  // Banner
+  const grad=ctx.createLinearGradient(0,0,c.width,0);
+  grad.addColorStop(0,"#AD28F5");
+  grad.addColorStop(1,"#2D68F2");
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,c.width,160);
+  ctx.font="bold 75px 'IBM Plex Sans Thai'";
+  ctx.fillStyle="#fff";
+  ctx.fillText("TStaff",80,105);
+
+  // Pills
+  let x=120,y=260;
+  if(t.priority) x=pill(ctx,x,y,PRIORITY_LABELS[t.priority],PRIO_COLORS[t.priority],"#fff");
+  if(t.department){
+    const [bg,fg]=DEPT_COLORS[t.department] || ["#64748b","#fff"];
+    x=pill(ctx,x,y,DEPT_LABELS[t.department],bg,fg);
+  }
+  if(t.due) x=pill(ctx,x,y,DUE_LABELS[t.due],"#4b5563","#fff");
+
+  // Task title
+  y+=40;
+  ctx.fillStyle="#000";
+  ctx.font="700 90px 'IBM Plex Sans Thai'";
+  y=wrap(ctx, t.name, 120, y+140, c.width-240, 100)+120;
+
+  // ✅ Status
+  if(t.status){
+    ctx.font="600 60px 'IBM Plex Sans Thai'";
+    ctx.fillStyle="#333";
+    ctx.fillText(`Status: ${STATUS_LABELS[t.status] || t.status}`,120,y);
+    y+=100;
+  }
+
+  // ✅ Description block
+  const desc=document.getElementById("descInput").value;
+  if(desc.trim()){
+    ctx.font="400 55px 'IBM Plex Sans Thai'";
+    y=wrap(ctx, desc.trim(), 120, y, c.width-240, 80)+50;
+  }
+
+  // ✅ Scoring bottom text
+  const b1=document.getElementById("line1").value;
+  const b2=document.getElementById("line2").value;
+
+  ctx.font="600 60px 'IBM Plex Sans Thai'";
+  if(b1) ctx.fillText(b1,120,c.height-300);
+  if(b2) ctx.fillText(b2,120,c.height-200);
+}
+
+function downloadPoster(){
+  const c=document.getElementById("poster");
+  const link=document.createElement("a");
+  link.download="tstaff-task.png";
+  link.href=c.toDataURL("image/png");
+  link.click();
+}
+
+window.onload=loadTasks;
+window.drawPoster=drawPoster;
+window.downloadPoster=downloadPoster;
+</script>
+
 </body>
 </html>
