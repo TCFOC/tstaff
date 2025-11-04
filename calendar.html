@@ -102,6 +102,16 @@ body {
   background:#eee;
 }
 
+.dots {
+  display:flex;
+  gap:2px;
+  justify-content:center;
+  position:absolute;
+  bottom:3px;
+  left:50%;
+  transform:translateX(-50%);
+}
+  
 .dot {
   width:7px;
   height:7px;
@@ -233,13 +243,19 @@ function render() {
     const todaysEvents = events.filter(e => e.date === key);
 
     if(todaysEvents.length){
-      const dot = document.createElement("div");
-      dot.className = "dot";
-      dot.style.background = colorCode(todaysEvents[0].color);
-      div.appendChild(dot);
+  const dotContainer = document.createElement("div");
+  dotContainer.className = "dots";
 
-      div.onclick = () => openPopup(key, todaysEvents);
-    }
+  todaysEvents.forEach(ev=>{
+    const dot = document.createElement("div");
+    dot.className = "dot";
+    dot.style.background = colorCode(ev.color);
+    dotContainer.appendChild(dot);
+  });
+
+  div.appendChild(dotContainer);
+  div.onclick = () => openPopup(key, todaysEvents);
+}
     cont.appendChild(div);
   }
 }
