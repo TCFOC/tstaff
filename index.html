@@ -591,7 +591,7 @@
         <p><strong>Email:</strong> <span id="accountEmail"></span></p>
         <p><strong>Status:</strong> <span id="accountStatus" style="font-weight:600;"></span></p>
         <p style="font-size:12px; color:#666; font-weight:400;">TStaff Version 3.1</p>
-        <a href="https://u.lin.ee/t3mThvd"><button style="background-color:#2D68F2">TRewards</button></a>
+        <a href="https://u.lin.ee/t3mThvd" id="trbutton"><button style="background-color:#2D68F2">TRewards</button></a>
         <button onclick="logout()">Logout</button>
       </div>
     </div>
@@ -889,6 +889,7 @@
     const announcementsContainer = document.getElementById("announcementsContainer");
     const suggestionInput = document.getElementById("suggestionInput");
     const suggestionStatus = document.getElementById("suggestionStatus");
+    const trbutton = document.getElementById("trbutton");
 
     const taskList = document.getElementById("taskList");
     const taskStats = document.getElementById("taskStats");
@@ -1218,6 +1219,7 @@
           if (data.member) {
             dashboard.style.display = "grid";
             recruitment.style.display = "none";
+            trbutton.style.display = "flex";
             loadAnnouncements();
             loadTasks();
             loadTopTasks();
@@ -1228,6 +1230,7 @@
           } else {
             dashboard.style.display = "none";
             recruitment.style.display = "flex";
+            trbutton.style.display = "none";
           }
         } else {
           await setDoc(ref, { name: user.email, member: false });

@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Recruitment</title>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { font-family: 'Raleway', system-ui, sans-serif; }
+    * { font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; }
     body { margin:0; display:flex; flex-direction:column; min-height:100dvh; background:#fff; color:#222; }
     .container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; }
     h1 { color:#AD28F5; margin-bottom:1rem; font-size:36px !important; }
@@ -27,8 +27,13 @@
   <p>As a staff member, you’ll be part of a wonderful team. We’ll need help in many areas, with skills like communication needed for the event.</p>
   <p>However, joining the event gives you an excellent opportunity to add to the activities side of your portfolio, as our event is the only academic contest in Thailand to be ran by students.</p>
   <p>If you think you are a good fit, click the button below to start!</p>
-  <button onclick="startForm()">Start Form <span>→</span></button>
+  <button onclick="seeReq()">View Requirements &rarr;</button>
 </div> 
+<div id="rqmPage" class="container">
+  <h1>Requirements</h1>
+  <img src="https://tcfthailand.com/tstaff/rqm.jpeg" width="500">
+  <button onclick="startForm()">Start Form &rarr;</button>
+</div>
 
 <div id="formPage" class="container" style="display:none; width:90dvw; height:90dvh; padding:0;">
   <iframe id="formFrame" 
@@ -38,8 +43,13 @@
 </div>
 
 <script>
-  function startForm(){
+  function seeReq() {
     document.getElementById("infoPage").style.display = "none";
+    document.getElementById("rqmPage").style.display = "flex";
+  }
+
+  function startForm(){
+    document.getElementById("rqmPage").style.display = "none";
     document.getElementById("formPage").style.display = "flex";
     document.getElementById("formFrame").style.display = "flex"; // replace with your form link
   }
