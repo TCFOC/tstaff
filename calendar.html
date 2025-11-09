@@ -1,311 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TCalendar</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TStaff</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
 
-<style>
-:root {
-  --brand-start:#AD28F5;
-  --brand-end:#2D68F2;
-  --bg:#f6f7fb;
-  --text:#111;
-  --card:#fff;
-  --border:#e6e8ef;
-  --r:#ef4444;
-  --o:#fb923c;
-  --y:#eab308;
-  --g:#22c55e;
-  --b:#3b82f6;
-  --p:#a855f7;
-}
+  <style>
+    :root {
+      --brand-start: #AD28F5;
+      --brand-end: #2D68F2;
+      --bg: #f6f7fb;
+      --text: #111;
+      --card: #fff;
+      --border: #e6e8ef;
+      --r: #ef4444;
+      --o: #fb923c;
+      --y: #eab308;
+      --g: #22c55e;
+      --b: #3b82f6;
+      --p: #a855f7;
+    }
 
-* {
-  box-sizing:border-box;
-  font-family:'IBM Plex Sans Thai', sans-serif;
-}
+    * {
+      box-sizing: border-box;
+      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+    }
 
-body {
-  margin:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  background:var(--bg);
-  color:var(--text);
-}
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-.topbar {
-  width:100%;
-  background:linear-gradient(90deg,var(--brand-start),var(--brand-end));
-  color:white;
-  padding:16px 20px;
-  font-weight:700;
-  font-size:1.6rem;
-  box-shadow:0 6px 16px rgba(0,0,0,.15);
-  margin-bottom:10px;
-}
+    .topbar {
+      width: 100%;
+      background: linear-gradient(90deg, var(--brand-start), var(--brand-end));
+      color: #fff;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-.nav {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:10px;
-}
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
 
-.navbtn {
-  background:#fff;
-  border:1px solid var(--border);
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:600;
-}
+    .navbtn {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
 
-.calendar {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  width:330px;
-  padding:20px;
-  box-shadow:0 6px 16px rgba(0,0,0,.08);
-}
+    .calendar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 330px;
+      padding: 20px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+    }
 
-#monthTitle {
-  text-align:center;
-  font-weight:600;
-  margin-bottom:6px;
-}
+    #monthTitle {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
 
-.weekdays, .days {
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  text-align:center;
-  gap:4px;
-}
+    .weekdays,
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      gap: 4px;
+    }
 
-.weekdays div {
-  font-weight:600;
-  font-size:0.85rem;
-}
+    .weekdays div {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
 
-.day {
-  padding:14px 0;
-  border-radius:8px;
-  cursor:pointer;
-  position:relative;
-  font-size:1rem;
-}
+    .day {
+      padding: 14px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      font-size: 1rem;
+    }
 
-.day:hover {
-  background:#eee;
-}
+    .day:hover {
+      background: #eee;
+    }
 
-.dots {
-  display:flex;
-  gap:2px;
-  justify-content:center;
-  position:absolute;
-  bottom:3px;
-  left:50%;
-  transform:translateX(-50%);
-}
-  
-.dot {
-  width:7px;
-  height:7px;
-  border-radius:50%;
-}
+    .dots {
+      display: flex;
+      gap: 2px;
+      justify-content: center;
+      position: absolute;
+      bottom: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
 
-#overlay {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.35);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
 
-.popup {
-  background:white;
-  border-radius:12px;
-  padding:20px 24px;
-  width:280px;
-  position:relative;
-  box-shadow:0 6px 18px rgba(0,0,0,.2);
-  text-align:center;
-}
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
 
-.close {
-  position:absolute;
-  right:10px;
-  top:8px;
-  cursor:pointer;
-  font-weight:700;
-}
+    .popup {
+      background: white;
+      border-radius: 12px;
+      padding: 20px 24px;
+      width: 280px;
+      position: relative;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
+      text-align: center;
+    }
 
-.eventItem {
-  margin-top:8px;
-  font-size:0.9rem;
-  padding:6px;
-  border-radius:6px;
-  background:#f2f2f2;
-}
+    .close {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
 
-.colorball {
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  display:inline-block;
-  margin-right:4px;
-  vertical-align:middle;
-}
+    .eventItem {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      padding: 6px;
+      border-radius: 6px;
+      background: #f2f2f2;
+    }
 
-</style>
+    .colorball {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="topbar">TCalendar</div>
-<br>
-<div class="nav">
-  <button class="navbtn" onclick="prevMonth()">&lt;</button>
-  <span id="monthTitle"></span>
-  <button class="navbtn" onclick="nextMonth()">&gt;</button>
-</div>
-
-<div class="calendar">
-  <div class="weekdays">
-    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+  <div class="topbar">
+    <div>TStaff Calendar</div>
+    <div><a href=".." style="text-decoration:none; color:white; font-weight:300;">&larr; Back to TStaff</a></div>
   </div>
-  <div class="days" id="days"></div>
-</div>
-
-<div id="overlay">
-  <div class="popup">
-    <div class="close" onclick="closePopup()">✕</div>
-    <div id="popupSub"></div>
-    <div id="popupEvents"></div>
+  <br>
+  <div class="nav">
+    <button class="navbtn" onclick="prevMonth()">&larr;</button>
+    <span id="monthTitle"></span>
+    <button class="navbtn" onclick="nextMonth()">&rarr;</button>
   </div>
-</div>
 
-<script>
-// ==============================
-//  EVENT DATA
-// ==============================
-const events = [
-  { date:"2025-11-06", title:"Meeting", color:"blue" },
-  { date:"2025-11-06", title:"CC Orientation", color:"purple"},
-  { date:"2025-11-10", title:"Meeting", color:"blue" },
-  { date:"2025-11-20", title:"Meeting", color:"blue" },
-  { date:"2025-11-20", title:"CC Poster First Draft", color:"purple" },
-  { date:"2025-11-25", title:"Meeting", color:"blue" },
-  { date:"2025-12-04", title:"Meeting", color:"blue" },
-  { date:"2025-12-11", title:"Meeting", color:"blue" },
-  { date:"2025-12-12", title:"End of TCF Registration", color:"orange" },
-  { date:"2025-12-18", title:"Meeting", color:"blue" },
-  { date:"2026-01-11", title:"The 2nd TCF 2026", color:"red" }
-];
+  <div class="calendar">
+    <div class="weekdays">
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+    </div>
+    <div class="days" id="days"></div>
+  </div>
 
-// ==============================
-//  STATE
-// ==============================
-let currentMonth = 10;
-let currentYear = 2025;
+  <div id="overlay">
+    <div class="popup">
+      <div class="close" onclick="closePopup()">✕</div>
+      <div id="popupSub"></div>
+      <div id="popupEvents"></div>
+    </div>
+  </div>
 
-// ==============================
-//  RENDER
-// ==============================
-function render() {
-  const first = new Date(currentYear, currentMonth, 1);
-  const monthName = first.toLocaleString("en-US",{month:"long",year:"numeric"});
-  document.getElementById("monthTitle").textContent = monthName;
+  <script>
+    // ==============================
+    //  EVENT DATA
+    // ==============================
+    const events = [
+      { date: "2025-11-06", title: "Meeting", color: "blue" },
+      { date: "2025-11-06", title: "CC Orientation", color: "purple" },
+      { date: "2025-11-10", title: "Meeting", color: "blue" },
+      { date: "2025-11-20", title: "Meeting", color: "blue" },
+      { date: "2025-11-20", title: "CC Poster First Draft", color: "purple" },
+      { date: "2025-11-25", title: "Meeting", color: "blue" },
+      { date: "2025-12-04", title: "Meeting", color: "blue" },
+      { date: "2025-12-11", title: "Meeting", color: "blue" },
+      { date: "2025-12-12", title: "End of TCF Registration", color: "orange" },
+      { date: "2025-12-18", title: "Meeting", color: "blue" },
+      { date: "2026-01-11", title: "The 2nd TCF 2026", color: "red" }
+    ];
 
-  const startDay = first.getDay();
-  const daysInMonth = new Date(currentYear,currentMonth+1,0).getDate();
-  const cont = document.getElementById("days");
-  cont.innerHTML = "";
+    // ==============================
+    //  STATE
+    // ==============================
+    let currentMonth = 10;
+    let currentYear = 2025;
 
-  for(let i=0;i<startDay;i++){
-    cont.appendChild(document.createElement("div"));
-  }
+    // ==============================
+    //  RENDER
+    // ==============================
+    function render() {
+      const first = new Date(currentYear, currentMonth, 1);
+      const monthName = first.toLocaleString("en-US", { month: "long", year: "numeric" });
+      document.getElementById("monthTitle").textContent = monthName;
 
-  for(let d=1; d<=daysInMonth; d++){
-    const div = document.createElement("div");
-    div.className = "day";
-    div.textContent = d;
+      const startDay = first.getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const cont = document.getElementById("days");
+      cont.innerHTML = "";
 
-    const key = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const todaysEvents = events.filter(e => e.date === key);
+      for (let i = 0; i < startDay; i++) {
+        cont.appendChild(document.createElement("div"));
+      }
 
-    if(todaysEvents.length){
-  const dotContainer = document.createElement("div");
-  dotContainer.className = "dots";
+      for (let d = 1; d <= daysInMonth; d++) {
+        const div = document.createElement("div");
+        div.className = "day";
+        div.textContent = d;
 
-  todaysEvents.forEach(ev=>{
-    const dot = document.createElement("div");
-    dot.className = "dot";
-    dot.style.background = colorCode(ev.color);
-    dotContainer.appendChild(dot);
-  });
+        const key = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const todaysEvents = events.filter(e => e.date === key);
 
-  div.appendChild(dotContainer);
-  div.onclick = () => openPopup(key, todaysEvents);
-}
-    cont.appendChild(div);
-  }
-}
+        if (todaysEvents.length) {
+          const dotContainer = document.createElement("div");
+          dotContainer.className = "dots";
 
-function colorCode(c){
-  return {
-    red:"var(--r)", orange:"var(--o)", yellow:"var(--y)", green:"var(--g)",
-    blue:"var(--b)", purple:"var(--p)"
-  }[c] || "var(--b)";
-}
+          todaysEvents.forEach(ev => {
+            const dot = document.createElement("div");
+            dot.className = "dot";
+            dot.style.background = colorCode(ev.color);
+            dotContainer.appendChild(dot);
+          });
 
-// ==============================
-//  POPUP
-// ==============================
-function openPopup(date, list){
-  const dateObj = new Date(date);
-  document.getElementById("popupSub").textContent =
-    dateObj.toLocaleString("en-US",{weekday:"long",month:"long",day:"numeric"});
+          div.appendChild(dotContainer);
+          div.onclick = () => openPopup(key, todaysEvents);
+        }
+        cont.appendChild(div);
+      }
+    }
 
-  let html = "";
-  list.forEach(e => {
-    html += `
+    function colorCode(c) {
+      return {
+        red: "var(--r)", orange: "var(--o)", yellow: "var(--y)", green: "var(--g)",
+        blue: "var(--b)", purple: "var(--p)"
+      }[c] || "var(--b)";
+    }
+
+    // ==============================
+    //  POPUP
+    // ==============================
+    function openPopup(date, list) {
+      const dateObj = new Date(date);
+      document.getElementById("popupSub").textContent =
+        dateObj.toLocaleString("en-US", { weekday: "long", month: "long", day: "numeric" });
+
+      let html = "";
+      list.forEach(e => {
+        html += `
     <div class="eventItem">
       <span class="colorball" style="background:${colorCode(e.color)}"></span>
       ${e.title}
     </div>`;
-  });
+      });
 
-  document.getElementById("popupEvents").innerHTML = html;
-  document.getElementById("overlay").style.display = "flex";
-}
+      document.getElementById("popupEvents").innerHTML = html;
+      document.getElementById("overlay").style.display = "flex";
+    }
 
-function closePopup(){
-  document.getElementById("overlay").style.display = "none";
-}
+    function closePopup() {
+      document.getElementById("overlay").style.display = "none";
+    }
 
-// ==============================
-//  NAVIGATION
-// ==============================
-function prevMonth(){
-  currentMonth--;
-  if(currentMonth < 0){ currentMonth=11; currentYear--; }
-  render();
-}
+    // ==============================
+    //  NAVIGATION
+    // ==============================
+    function prevMonth() {
+      currentMonth--;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      render();
+    }
 
-function nextMonth(){
-  currentMonth++;
-  if(currentMonth > 11){ currentMonth=0; currentYear++; }
-  render();
-}
+    function nextMonth() {
+      currentMonth++;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      render();
+    }
 
-render();
-</script>
+    render();
+  </script>
 
 </body>
+
 </html>

@@ -7,7 +7,6 @@
   <title>TStaff</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
-  <!--Taskcheck Styling-->
   <style>
     :root {
       --brand-start: #AD28F5;
@@ -283,9 +282,7 @@
         font-size: clamp(15px, 2.7vw, 18px);
       }
     }
-  </style>
 
-  <style>
     /* Base + mobile scale (safe, no transform) */
     html {
       font-size: 16px;
@@ -315,6 +312,30 @@
       line-height: 1.6;
       background: #fafafa;
       color: #111;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        min-height: 100svh;
+      }
+
+      #dashboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      #suggest {
+        display: none;
+      }
+
+      #todoCard {
+        grid-column: 1 !important;
+        grid-row: 1 / span 2 !important;
+        align-self: stretch;
+      }
     }
 
     /* Top bar */
@@ -569,6 +590,8 @@
         <p><strong>Full Name:</strong> <span id="accountName"></span></p>
         <p><strong>Email:</strong> <span id="accountEmail"></span></p>
         <p><strong>Status:</strong> <span id="accountStatus" style="font-weight:600;"></span></p>
+        <p style="font-size:12px; color:#666; font-weight:400;">TStaff Version 3.1</p>
+        <a href="https://u.lin.ee/t3mThvd"><button style="background-color:#2D68F2">TRewards</button></a>
         <button onclick="logout()">Logout</button>
       </div>
     </div>
@@ -605,7 +628,9 @@
       </div>
       <div id="usefulinfo" class="card">
         <div style="text-align:center;">
-          <h3 style="margin:0.3rem 0;font-weight:600;">🕒 <span id="countdown">Loading...</span></h3>
+          <!--<h3 style="margin:0.3rem 0;font-weight:600;">🕒 <span id="countdown">Loading...</span></h3>-->
+          <h3 style="margin:0;font-weight:600;cursor:pointer;color:#2D68F2" onclick="showinfo()">🗓️ Meeting Information
+          </h3>
         </div>
 
         <hr style="border:none;border-top:1px solid #eee;margin:1rem 0;">
@@ -615,21 +640,11 @@
           <p id="internalFocus" style="font-size:0.9rem;color:#333;">Loading...</p>
         </div>
 
-        <hr style="border:none;border-top:1px solid #eee;margin:1rem 0;">
+        <hr style="border:none;border-top:1px solid #eee;margin:1rem 0;margin-top: 0;">
 
         <div style="text-align:center;color:#777;font-style:italic;font-size:0.9rem;">
           <span id="quoteText">Loading inspiration...</span>
         </div>
-      </div>
-
-      <!-- Suggestions -->
-      <div class="card">
-        <h2 style="margin-top:0;color:#AD28F5;">💡 Suggestions</h2>
-        <textarea id="suggestionInput" placeholder="Write your idea..."
-          style="width:100%;height:70px;resize:none;border:1px solid #ccc;border-radius:6px;padding:0.6rem;"></textarea>
-        <button onclick="submitSuggestion()"
-          style="width:100%;margin-top:0.5rem;background:#AD28F5;color:white;border:none;padding:0.6rem;border-radius:6px;font-weight:600;cursor:pointer;">Submit</button>
-        <p id="suggestionStatus" style="margin-top:0.5rem;font-size:0.85rem;color:#333;"></p>
       </div>
     </div>
 
@@ -675,6 +690,101 @@
     </div>
   </div>
 
+  <style>
+    /* Overlay background */
+    #infobox-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(3px);
+    }
+
+    /* Popup box */
+    #infobox {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.25);
+      padding: 22px 26px;
+      width: min(90%, 360px);
+      position: relative;
+      animation: popupIn 0.25s ease;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      color: #111;
+      text-align: center;
+    }
+
+    /* Slide-fade animation */
+    @keyframes popupIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Close button */
+    #infobox .closebtn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #666;
+      font-size: 1.1rem;
+      user-select: none;
+    }
+
+    #infobox .closebtn:hover {
+      color: #000;
+    }
+  </style>
+
+  <!-- Popup HTML -->
+  <div id="infobox-overlay" onclick="hideinfo()">
+    <div id="infobox" onclick="event.stopPropagation()">
+      <div class="closebtn" onclick="hideinfo()">✕</div>
+      <h3 style="margin-top:0;color:#2D68F2;">Meeting Information</h3>
+      <p>
+        The next team meeting will be held on <b id="countdown">date</b>.
+      </p>
+      <p id="meetingnote"></p>
+      <a href="https://tcfthailand.com/tstaff/calendar" style="color:#2D68F2; text-decoration:none; font-weight:bolder;"
+        target="_blank">View Full Calendar →</a>
+    </div>
+  </div>
+
+  <script>
+    function showinfo() {
+      document.getElementById("infobox-overlay").style.display = "flex";
+    }
+
+    function hideinfo() {
+      document.getElementById("infobox-overlay").style.display = "none";
+    }
+  </script>
+
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+
   <!--Mobile-->
   <style>
     /* Desktop: show planning card, hide shortcuts */
@@ -689,12 +799,11 @@
 
     /* Mobile: hide planning card, show shortcuts */
     @media (max-width: 1000px) {
-      #mobileShortcuts {
+      #mobileShortcuts, #usefulInfo {
         display: flex !important;
       }
 
-      #todoCard,
-      #usefulinfo {
+      #todoCard {
         display: none !important;
       }
     }
@@ -726,7 +835,7 @@
       /* Announcements takes the remaining vertical space before suggestions */
       .card:nth-of-type(1) {
         flex: 1 1 auto;
-        height: 60%;
+        height: 40%;
         overflow-y: auto;
       }
 
@@ -734,6 +843,19 @@
       .card:nth-of-type(2) {
         flex: 0 0 auto;
         overflow-y: auto;
+      }
+    }
+
+    /* Tablet font & layout tuning for left column */
+    @media (max-width: 1200px) and (min-width: 768px) {
+      #usefulinfo {
+        font-size: 0.9rem;
+        line-height: 1;
+      }
+
+      #quoteText,
+      #internalFocus {
+        line-height: 1.2 !important;
       }
     }
   </style>
@@ -901,88 +1023,110 @@
       }
 
       const q = query(collection(db, "taskcheck"));
+
       onSnapshot(q, (snap) => {
-        const tasks = [];
+        const activeTasks = [];
 
         snap.forEach((docSnap) => {
           const t = docSnap.data();
-          if (t.status === "green") return; // hide done ✅
+          const status = (t.status || "").toLowerCase();
 
-          tasks.push({
+          // Skip done tasks
+          if (status === "green") return;
+
+          activeTasks.push({
             id: docSnap.id,
-            name: t.name || "Untitled Task",
+            name: (t.name || "Untitled Task").trim(),
             priority: Number(t.priority) || 99,
-            status: t.status,
-            department: t.department || "all",
-            due: Number(t.due) || 999
+            status,
+            department: (t.department || "allmembers").toLowerCase(),
+            due: Number(t.due) || 999,
+            important: !!t.important
           });
         });
 
-        // Sorting rules
-        tasks.sort((a, b) => {
+        // Sort:
+        // 1) Important first
+        // 2) Due (via dueRank)
+        // 3) Priority (1 < 2 < 3)
+        // 4) Department: allmembers first, then A→Z
+        // 5) Status: red before yellow
+        // 6) Name A→Z
+        activeTasks.sort((a, b) => {
+          // 1. Important
+          const impA = a.important ? 1 : 0;
+          const impB = b.important ? 1 : 0;
+          if (impA !== impB) return impB - impA; // important (1) before 0
+
+          // 2. Due
           const dA = dueRank(a.due), dB = dueRank(b.due);
           if (dA !== dB) return dA - dB;
 
+          // 3. Priority
           if (a.priority !== b.priority) return a.priority - b.priority;
 
-          if (a.department === "all" && b.department !== "all") return -1;
-          if (a.department !== "all" && b.department === "all") return 1;
+          // 4. Department (allmembers first)
+          const depA = a.department;
+          const depB = b.department;
+          if (depA === "allmembers" && depB !== "allmembers") return -1;
+          if (depB === "allmembers" && depA !== "allmembers") return 1;
+          if (depA !== depB) return depA.localeCompare(depB);
 
-          if (a.department !== b.department)
-            return a.department.localeCompare(b.department);
+          // 5. Status: red (1) then yellow (2)
+          const statusRank = { red: 1, yellow: 2 };
+          const sA = statusRank[a.status] || 99;
+          const sB = statusRank[b.status] || 99;
+          if (sA !== sB) return sA - sB;
 
+          // 6. Name
           return a.name.localeCompare(b.name, "th");
         });
 
-        const urgent = tasks.filter(t => t.status === "red");
-        const progress = tasks.filter(t => t.status === "yellow");
-        const final = [...urgent, ...progress].slice(0, 3);
-
+        const final = activeTasks.slice(0, 3);
         const list = document.getElementById("topTasks");
         list.innerHTML = "";
 
-        if (final.length === 0) {
+        if (!final.length) {
           list.innerHTML = "<li style='color:#777;'>No active tasks 🎉</li>";
           return;
         }
 
-        final.forEach((task) => {
+        final.forEach((task, idx) => {
           const dueText = DUE_LABELS[task.due] || task.due;
-          const statusLabel = task.status === "red"
-            ? "Not Done"
-            : task.status === "yellow"
-              ? "In Progress"
-              : "Status";
+          const prioLabel = { 1: "High", 2: "Medium", 3: "Low" }[task.priority] || `P${task.priority}`;
+          const statusLabel =
+            task.status === "red" ? "Not Done" :
+              task.status === "yellow" ? "In Progress" :
+                task.status;
 
-          const dotClass = task.status === "red"
-            ? "st-red"
-            : task.status === "yellow"
-              ? "st-yellow"
-              : "st-green";
+          const dotClass =
+            task.status === "red" ? "st-red" :
+              task.status === "yellow" ? "st-yellow" :
+                "st-green";
 
-          const prioClass = `prio-${task.priority}`;
           const deptLabel = DEPT_LABELS[task.department] || task.department;
           const deptClassName = deptClass(task.department);
-
+          const prioClass = `prio-${task.priority}`;
 
           const li = document.createElement("li");
           li.style.listStyle = "none";
-          li.style.marginBottom = "12px";
+          li.style.marginBottom = "10px";
 
           li.innerHTML = `
-        <div class="card" style="border-left-width: 4px; border-left-color:${task.status === "red" ? "#ef4444" : "#f5c32c"
-            }; cursor:default;">
+        <div class="card"
+             style="border-left-width:4px;
+                    border-left-color:${task.important ? "#ef4444" : "transparent"};
+                    cursor:default; padding:10px 12px;">
           <div class="row-top">
-            <span class="pill ${prioClass}">${["High", "Medium", "Low"][task.priority - 1]}</span>
+            <span class="pill ${prioClass}">${prioLabel}</span>
             <span class="pill ${deptClassName}">${deptLabel}</span>
-
             <span class="pill">${dueText}</span>
           </div>
           <div class="row-status">
             <span class="status-dot ${dotClass}"></span>
             <span>${statusLabel}</span>
           </div>
-          <p class="name">${task.name}</p>
+          <p class="name" style="margin-top:2px;">${task.name}</p>
         </div>
       `;
 
@@ -990,7 +1134,6 @@
         });
       });
     }
-
 
 
     // Countdown
@@ -1004,11 +1147,18 @@
     // Load Internal Focus (dashboard → note → text)
     async function loadInternalFocus() {
       const ref = doc(db, "dashboard", "note");
+      const ref2 = doc(db, "dashboard", "meetingnote");
       const snap = await getDoc(ref);
+      const snap2 = await getDoc(ref2);
       if (snap.exists()) {
-        document.getElementById("internalFocus").textContent = snap.data().text || "No current focus.";
+        document.getElementById("internalFocus").innerHTML = snap.data().text || "No current focus.";
       } else {
-        document.getElementById("internalFocus").textContent = "No current focus.";
+        document.getElementById("internalFocus").innerHTML = "No current focus.";
+      }
+      if (snap2.exists()) {
+        document.getElementById("meetingnote").innerHTML = snap2.data().text || "";
+      } else {
+        document.getElementById("meetingnote").innerHTML = "";
       }
     }
 
@@ -1016,17 +1166,17 @@
     function loadQuote() {
       const quotes = [
         "Discipline is the bridge between goals and accomplishment.",
-        "Success doesn’t come from what you do occasionally, but from what you do consistently.",
         "Small steps every day lead to big results.",
         "Teamwork divides the task and multiplies the success.",
         "Do what you can, with what you have, where you are.",
         "Focus on progress, not perfection.",
-        "Hard work beats talent when talent doesn’t work hard.",
         "The only way to achieve the impossible is to believe it is possible.",
         "Great things are done by a series of small things brought together.",
         "Success is the sum of small efforts, repeated day in and day out.",
         "Believe you can and you're halfway there.",
-        "Look, and you will not see."
+        "Look, and you will not see.",
+        "Have you eaten your musket?",
+        "Thank you for being a part of our team! ❤️",
       ];
       const random = quotes[Math.floor(Math.random() * quotes.length)];
       document.getElementById("quoteText").textContent = random;
@@ -1072,8 +1222,8 @@
             loadTasks();
             loadTopTasks();
             loadInternalFocus();
-            updateCountdown();
             loadQuote();
+            loadNextMeeting();
 
           } else {
             dashboard.style.display = "none";
@@ -1145,6 +1295,40 @@
 
     // Default tab
     showTab("login");
+
+    window.loadNextMeeting = async function () {
+      try {
+        const res = await fetch('calendar.html');
+        const text = await res.text();
+        const match = text.match(/const\s+events\s*=\s*(\[[\s\S]*?\]);/);
+        if (!match) throw new Error("No events found in calendar.html");
+
+        const events = eval(match[1]);
+        const now = new Date();
+        const meetings = events
+          .filter(e => e.title.toLowerCase().includes("meeting"))
+          .map(e => ({ ...e, dateObj: new Date(e.date) }))
+          .filter(e => e.dateObj >= now)
+          .sort((a, b) => a.dateObj - b.dateObj);
+
+        const next = meetings[0];
+        const el = document.getElementById("countdown");
+
+        if (next) {
+          const d = next.dateObj;
+          const formatted = `${d.getDate()} ${d.toLocaleString('en-US', { month: 'long' })} ${d.getFullYear()}`;
+          el.textContent = formatted;
+        } else {
+          el.textContent = "No upcoming meetings.";
+        }
+      } catch (err) {
+        console.error(err);
+        const el = document.getElementById("countdown");
+        if (el) el.textContent = "Unable to fetch meeting data.";
+      }
+    };
+
+
   </script>
 </body>
 

@@ -1,266 +1,451 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TStaff Taskcheck</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --brand-start:#AD28F5;
-    --brand-end:#2D68F2;
-    --bg:#f6f7fb;
-    --card:#fff;
-    --text:#111;
-    --muted:#666;
-    --border:#e6e8ef;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Taskcheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --brand-start: #AD28F5;
+      --brand-end: #2D68F2;
+      --bg: #f6f7fb;
+      --card: #fff;
+      --text: #111;
+      --muted: #666;
+      --border: #e6e8ef;
 
-    --dept-all:#64748b;
-    --dept-core:#2D68F2;
-    --dept-finance:#26a269;
-    --dept-pr:#7c3aed;
-    --dept-supervision:#eab308;
-    --dept-activities:#ef4444;
-    --dept-recruits:#fb923c;
-    --dept-cc:#9c6b3c;
+      --dept-all: #64748b;
+      --dept-core: #2D68F2;
+      --dept-finance: #26a269;
+      --dept-pr: #7c3aed;
+      --dept-supervision: #eab308;
+      --dept-activities: #ef4444;
+      --dept-recruits: #fb923c;
+      --dept-cc: #9c6b3c;
 
-    --prio-1:#ef4444;
-    --prio-2:#fb923c;
-    --prio-3:#eab308;
+      --prio-1: #ef4444;
+      --prio-2: #fb923c;
+      --prio-3: #eab308;
 
-    --status-red:#ef4444;
-    --status-yellow:#f5c32c;
-    --status-green:#22c55e;
-  }
-  *{ box-sizing:border-box; font-family:'IBM Plex Sans Thai',system-ui,sans-serif; }
-  body{ margin:0; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+      --status-red: #ef4444;
+      --status-yellow: #f5c32c;
+      --status-green: #22c55e;
+    }
 
-  .topbar{
-    background:linear-gradient(90deg,var(--brand-start),var(--brand-end));
-    color:#fff; padding:1rem 1.25rem;
-    display:flex; align-items:center; justify-content:space-between;
-    font-weight:600; font-size:1.2rem;
-    box-shadow:0 6px 18px rgba(0,0,0,.12);
-    position:sticky; top:0; z-index:10;
-  }
+    * {
+      box-sizing: border-box;
+      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+    }
 
-  .filters{
-    display:grid; gap:.6rem;
-    grid-template-columns: 1fr repeat(4, minmax(160px,230px));
-    padding: 10px 14px;
-  }
-  @media(max-width:1000px){ .filters{ grid-template-columns:1fr 1fr; } }
-  @media(max-width:640px){ .filters{ grid-template-columns:1fr; } }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-  .input,.select,.btn{
-    background:var(--card); border:1px solid var(--border); color:var(--text);
-    padding:.65rem .8rem; border-radius:10px !important; outline:none; font-size:.95rem;
-  }
-  .select:focus,.input:focus{
-    border-color:var(--brand-end); box-shadow:0 0 0 4px rgba(45,104,242,.12);
-  }
+    .topbar {
+      background: linear-gradient(90deg, var(--brand-start), var(--brand-end));
+      color: #fff;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-  .wrap{ padding: 4px 12px 24px; }
-  .grid{ display:grid; gap:12px; grid-template-columns:repeat(3,minmax(260px,1fr)); }
-  @media(max-width:1100px){ .grid{ grid-template-columns:repeat(2,minmax(250px,1fr)); } }
-  @media(max-width:700px){ .grid{ grid-template-columns:1fr; } }
+    .filters {
+      display: grid;
+      gap: .6rem;
+      grid-template-columns: 1fr repeat(4, minmax(160px, 230px));
+      padding: 10px 14px;
+    }
 
-  .card{
-    background:var(--card); border:1px solid var(--border);
-    border-left:6px solid transparent;
-    border-radius:14px; padding:14px;
-    box-shadow:0 10px 24px rgba(0,0,0,.06);
-    opacity:0; transform:translateY(6px);
-    animation:fadeUp .35s ease forwards;
-  }
-  .card:hover{ transform:translateY(-2px); box-shadow:0 16px 28px rgba(0,0,0,.1); }
+    @media(max-width:1000px) {
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
 
-  @keyframes fadeUp{ to{opacity:1; transform:translateY(0);} }
+    @media(max-width:640px) {
+      .filters {
+        grid-template-columns: 1fr;
+      }
+    }
 
-  .pill{
-    border-radius:999px; padding:.25rem .55rem; font-size:.78rem; font-weight:600;
-    border:1px solid var(--border);
-  }
+    .input,
+    .select,
+    .btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .65rem .8rem;
+      border-radius: 10px !important;
+      outline: none;
+      font-size: .95rem;
+    }
 
-  .dept-all{ background:#e2e8f0; color:#0f172a; border-color:#cbd5e1; }
-  .dept-core{ color:#fff; background:var(--dept-core); border-color:transparent; }
-  .dept-finance{ color:#fff; background:var(--dept-finance); border-color:transparent; }
-  .dept-pr{ color:#fff; background:var(--dept-pr); border-color:transparent; }
-  .dept-supervision{ background:#fff3bf; color:#6b5800; border-color:#fde68a; }
-  .dept-activities{ color:#fff; background:var(--dept-activities); border-color:transparent; }
-  .dept-recruits{ color:#fff; background:var(--dept-recruits); border-color:transparent; }
-  .dept-cc{ color:#fff; background:var(--dept-cc); border-color:transparent; }
+    .select:focus,
+    .input:focus {
+      border-color: var(--brand-end);
+      box-shadow: 0 0 0 4px rgba(45, 104, 242, .12);
+    }
 
-  .prio-1{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-  .prio-2{ background:#ffedd5; color:#9a3412; border-color:#fed7aa; }
-  .prio-3{ background:#fef3c7; color:#854d0e; border-color:#fde68a; }
+    .wrap {
+      padding: 4px 12px 24px;
+    }
 
-  .row-top{ display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.35rem; }
-  .row-status{ display:flex; align-items:center; gap:.5rem; margin-bottom:.4rem; color:#333; font-weight:600; }
-  .name{ font-size:1.05rem; font-weight:700; margin:0; }
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+    }
 
-  .status-dot{
-    width:10px; height:10px; border-radius:50%;
-    display:inline-block; margin-right:6px; border:0;
-  }
-  .st-red{ background:var(--status-red); }
-  .st-yellow{ background:var(--status-yellow); }
-  .st-green{ background:var(--status-green); }
+    @media(max-width:1100px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(250px, 1fr));
+      }
+    }
 
-  .empty{
-    border:2px dashed var(--border); border-radius:14px; padding:22px; text-align:center; color:#666;
-    background:linear-gradient(180deg,#fff,#fafbff);
-  }
+    @media(max-width:700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-  html{ font-size:16px; }
-  @media(max-width:768px){ html{ font-size: clamp(15px,2.7vw,18px);} }
-</style>
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 6px solid transparent;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .06);
+      opacity: 0;
+      transform: translateY(6px);
+      animation: fadeUp .35s ease forwards;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 28px rgba(0, 0, 0, .1);
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: .25rem .55rem;
+      font-size: .78rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+    }
+
+    .dept-all {
+      background: #e2e8f0;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    .dept-core {
+      color: #fff;
+      background: var(--dept-core);
+      border-color: transparent;
+    }
+
+    .dept-finance {
+      color: #fff;
+      background: var(--dept-finance);
+      border-color: transparent;
+    }
+
+    .dept-pr {
+      color: #fff;
+      background: var(--dept-pr);
+      border-color: transparent;
+    }
+
+    .dept-supervision {
+      background: #fff3bf;
+      color: #6b5800;
+      border-color: #fde68a;
+    }
+
+    .dept-activities {
+      color: #fff;
+      background: var(--dept-activities);
+      border-color: transparent;
+    }
+
+    .dept-recruits {
+      color: #fff;
+      background: var(--dept-recruits);
+      border-color: transparent;
+    }
+
+    .dept-cc {
+      color: #fff;
+      background: var(--dept-cc);
+      border-color: transparent;
+    }
+
+    .prio-1 {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .prio-2 {
+      background: #ffedd5;
+      color: #9a3412;
+      border-color: #fed7aa;
+    }
+
+    .prio-3 {
+      background: #fef3c7;
+      color: #854d0e;
+      border-color: #fde68a;
+    }
+
+    .row-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: .35rem;
+    }
+
+    .row-status {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .4rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      border: 0;
+    }
+
+    .st-red {
+      background: var(--status-red);
+    }
+
+    .st-yellow {
+      background: var(--status-yellow);
+    }
+
+    .st-green {
+      background: var(--status-green);
+    }
+
+    .empty {
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      text-align: center;
+      color: #666;
+      background: linear-gradient(180deg, #fff, #fafbff);
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    @media(max-width:768px) {
+      html {
+        font-size: clamp(15px, 2.7vw, 18px);
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="topbar">TStaff Taskcheck</div>
+  <div class="topbar">
+    <div>TStaff Taskcheck</div>
+    <div><a href=".." style="text-decoration:none; color:white; font-weight:300;">&larr; Back to TStaff</a></div>
+  </div>
 
-<div class="filters">
-  <input id="searchInput" class="input" placeholder="Search tasks…"/>
+  <div class="filters">
+    <input id="searchInput" class="input" placeholder="Search tasks…" />
 
-  <select id="deptSelect" class="select">
-    <option value="all">All Departments</option>
-    <option value="core">Core Team</option>
-    <option value="finance">Finances & Sponsors</option>
-    <option value="pr">Public Relations</option>
-    <option value="supervision">Student Supervision</option>
-    <option value="activities">Activities</option>
-    <option value="cc">Creative Contest</option>
-        <option value="recruits">New Recruits</option>
-  </select>
+    <select id="deptSelect" class="select">
+      <option value="all">All Departments</option>
+      <option value="core">Core Team</option>
+      <option value="finance">Finances & Sponsors</option>
+      <option value="pr">Public Relations</option>
+      <option value="supervision">Student Supervision</option>
+      <option value="activities">Activities</option>
+      <option value="cc">Creative Contest</option>
+      <option value="recruits">New Recruits</option>
+    </select>
 
-  <select id="prioSelect" class="select">
-    <option value="all">Priority: All</option>
-    <option value="1">High</option>
-    <option value="2">Medium</option>
-    <option value="3">Low</option>
-  </select>
+    <select id="prioSelect" class="select">
+      <option value="all">Priority: All</option>
+      <option value="1">High</option>
+      <option value="2">Medium</option>
+      <option value="3">Low</option>
+    </select>
 
-  <select id="statusSelect" class="select">
-    <option value="all">Status: All</option>
-    <option value="red">Not Done</option>
-    <option value="yellow">In Progress</option>
-    <option value="green">Done</option>
-  </select>
+    <select id="statusSelect" class="select">
+      <option value="all">Status: All</option>
+      <option value="red">Not Done</option>
+      <option value="yellow">In Progress</option>
+      <option value="green">Done</option>
+    </select>
 
-  <select id="dueSelect" class="select">
-    <option value="all">Due: All</option>
-    <option value="10">October</option>
-    <option value="111">Early November</option>
-    <option value="112">Late November</option>
-    <option value="121">Early December</option>
-    <option value="122">Late December</option>
-    <option value="1">January</option>
-  </select>
-</div>
+    <select id="dueSelect" class="select">
+      <option value="all">Due: All</option>
+      <option value="10">October</option>
+      <option value="111">Early November</option>
+      <option value="112">Late November</option>
+      <option value="121">Early December</option>
+      <option value="122">Late December</option>
+      <option value="1">January</option>
+    </select>
+  </div>
 
-<div class="wrap">
-  <div id="grid" class="grid"></div>
-  <div id="empty" class="empty" style="display:none;">No tasks match your filters.</div>
-</div>
+  <div class="wrap">
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">No tasks match your filters.</div>
+  </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const app = initializeApp({
-    apiKey:"AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
-    authDomain:"tstaff-tcf.firebaseapp.com",
-    projectId:"tstaff-tcf",
-    storageBucket:"tstaff-tcf.firebasestorage.app",
-    messagingSenderId:"1038965947691",
-    appId:"1:1038965947691:web:8a2f21a6424b82c14ad96e"
-  });
-  const db = getFirestore(app);
-
-  const searchInput = document.getElementById("searchInput");
-  const deptSelect = document.getElementById("deptSelect");
-  const prioSelect = document.getElementById("prioSelect");
-  const statusSelect = document.getElementById("statusSelect");
-  const dueSelect = document.getElementById("dueSelect");
-  const grid = document.getElementById("grid");
-  const emptyEl = document.getElementById("empty");
-
-  const DUE_LABELS = {10:"October",111:"Early November",112:"Late November",121:"Early December",122:"Late December",1:"January"};
-  const STATUS_LABELS = {red:"Not Done",yellow:"In Progress",green:"Done"};
-
-  const DEPT_LABELS = {
-    allmembers:"All Members", core:"Core Team", finance:"Finances & Sponsors", pr:"Public Relations",
-    supervision:"Student Supervision", activities:"Activities", recruits:"New Recruits", cc:"Creative Contest"
-  };
-
-  function deptClass(dep){ return {
-    allmembers:"dept-all", core:"dept-core", finance:"dept-finance", pr:"dept-pr",
-    supervision:"dept-supervision", activities:"dept-activities", recruits:"dept-recruits", cc:"dept-cc"
-  }[dep] || "dept-all"; }
-
-  function prioClass(p){ return p===1?"prio-1":p===2?"prio-2":"prio-3"; }
-  function statusDotClass(s){ return s==="red"?"st-red":s==="yellow"?"st-yellow":"st-green"; }
-
-  let rawTasks=[];
-
-  function applyFilters(tasks){
-    const q = searchInput.value.toLowerCase();
-    const fd = deptSelect.value;
-    const fp = prioSelect.value;
-    const fs = statusSelect.value;
-    const fdue = dueSelect.value;
-
-    let res = tasks.filter(t=>{
-      if(q && !t.name.toLowerCase().includes(q)) return false;
-      if(fd !== "all"){
-        if(fd === "recruits" && t.department !== fd) return false;
-        if(fd !== "recruits" && t.department !== fd && t.department !== "allmembers") return false;
-      }
-      if(fp !== "all" && t.priority !== Number(fp)) return false;
-      if(fs !== "all" && t.status !== fs) return false;
-      if(fdue !== "all" && t.due !== Number(fdue)) return false;
-      return true;
+    const app = initializeApp({
+      apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+      authDomain: "tstaff-tcf.firebaseapp.com",
+      projectId: "tstaff-tcf",
+      storageBucket: "tstaff-tcf.firebasestorage.app",
+      messagingSenderId: "1038965947691",
+      appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
     });
+    const db = getFirestore(app);
 
-function dueRank(d){
-  if (d === 10) return 1;     // Oct
-  if (d === 111) return 2;    // Early Nov
-  if (d === 112) return 3;    // Late Nov
-  if (d === 121) return 4;    // Early Dec
-  if (d === 122) return 5;    // Late Dec
-  if (d === 1) return 6;      // January
-  return 999;                 // Unknown goes to bottom
-}
+    const searchInput = document.getElementById("searchInput");
+    const deptSelect = document.getElementById("deptSelect");
+    const prioSelect = document.getElementById("prioSelect");
+    const statusSelect = document.getElementById("statusSelect");
+    const dueSelect = document.getElementById("dueSelect");
+    const grid = document.getElementById("grid");
+    const emptyEl = document.getElementById("empty");
 
-res.sort((a,b)=>{
-  if (a.important !== b.important) return a.important ? -1 : 1;
-  if (a.due !== b.due) return dueRank(a.due) - dueRank(b.due);
-  if (a.priority !== b.priority) return a.priority - b.priority;
-  return a.name.localeCompare(b.name, 'th');
-});
-return res;
-  }
+    const DUE_LABELS = { 10: "October", 111: "Early November", 112: "Late November", 121: "Early December", 122: "Late December", 1: "January" };
+    const STATUS_LABELS = { red: "Not Done", yellow: "In Progress", green: "Done" };
 
-  function render(){
-    const list = applyFilters(rawTasks);
-    grid.innerHTML="";
-    if(!list.length){ emptyEl.style.display="block"; return;}
-    emptyEl.style.display="none";
+    const DEPT_LABELS = {
+      allmembers: "All Members", core: "Core Team", finance: "Finances & Sponsors", pr: "Public Relations",
+      supervision: "Student Supervision", activities: "Activities", recruits: "New Recruits", cc: "Creative Contest"
+    };
 
-    list.forEach((t,i)=>{
-      const card = document.createElement("div");
-      card.className="card";
-      if(t.important) card.style.borderLeftColor="#ef4444";
-      card.style.animationDelay=`${Math.min(i,10)*35}ms`;
+    function deptClass(dep) {
+      return {
+        allmembers: "dept-all", core: "dept-core", finance: "dept-finance", pr: "dept-pr",
+        supervision: "dept-supervision", activities: "dept-activities", recruits: "dept-recruits", cc: "dept-cc"
+      }[dep] || "dept-all";
+    }
 
-      const dueLabel = DUE_LABELS[t.due]||t.due;
-      const statusLabel = STATUS_LABELS[t.status]||t.status;
-      const deptLabel = DEPT_LABELS[t.department]||t.department;
+    function prioClass(p) { return p === 1 ? "prio-1" : p === 2 ? "prio-2" : "prio-3"; }
+    function statusDotClass(s) { return s === "red" ? "st-red" : s === "yellow" ? "st-yellow" : "st-green"; }
 
-      card.innerHTML=`
+    let rawTasks = [];
+
+    function applyFilters(tasks) {
+      const q = searchInput.value.toLowerCase();
+      const fd = deptSelect.value;
+      const fp = prioSelect.value;
+      const fs = statusSelect.value;
+      const fdue = dueSelect.value;
+
+      let res = tasks.filter(t => {
+        if (q && !t.name.toLowerCase().includes(q)) return false;
+        if (fd !== "all") {
+          if (fd === "recruits" && t.department !== fd) return false;
+          if (fd !== "recruits" && t.department !== fd && t.department !== "allmembers") return false;
+        }
+        if (fp !== "all" && t.priority !== Number(fp)) return false;
+        if (fs !== "all" && t.status !== fs) return false;
+        if (fdue !== "all" && t.due !== Number(fdue)) return false;
+        return true;
+      });
+
+      function dueRank(d) {
+        if (d === 10) return 1;     // Oct
+        if (d === 111) return 2;    // Early Nov
+        if (d === 112) return 3;    // Late Nov
+        if (d === 121) return 4;    // Early Dec
+        if (d === 122) return 5;    // Late Dec
+        if (d === 1) return 6;      // January
+        return 999;                 // Unknown goes to bottom
+      }
+
+      // Custom sort: Important first, then due, then priority,
+      // Done (green) tasks are pushed to the end — except important ones.
+      res.sort((a, b) => {
+        // Important tasks always come first
+        if (a.important !== b.important) return a.important ? -1 : 1;
+
+        // Among tasks with same importance:
+        // Non-green first, green last (but if both are green, continue sorting)
+        const aDone = a.status === 'green';
+        const bDone = b.status === 'green';
+        if (aDone !== bDone) return aDone ? 1 : -1;
+
+        // If both same done status, sort by due → priority → name
+        if (a.due !== b.due) return (a.due ?? 9999) - (b.due ?? 9999);
+        if (a.priority !== b.priority) return (a.priority ?? 99) - (b.priority ?? 99);
+        return a.name.localeCompare(b.name, 'th');
+      });
+      return res;
+    }
+
+    function render() {
+      const list = applyFilters(rawTasks);
+      grid.innerHTML = "";
+      if (!list.length) { emptyEl.style.display = "block"; return; }
+      emptyEl.style.display = "none";
+
+      list.forEach((t, i) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        if (t.important) card.style.borderLeftColor = "#ef4444";
+        card.style.animationDelay = `${Math.min(i, 10) * 35}ms`;
+
+        const dueLabel = DUE_LABELS[t.due] || t.due;
+        const statusLabel = STATUS_LABELS[t.status] || t.status;
+        const deptLabel = DEPT_LABELS[t.department] || t.department;
+
+        card.innerHTML = `
         <div class="row-top">
-          <span class="pill ${prioClass(t.priority)}">${["High","Medium","Low"][t.priority-1]}</span>
+          <span class="pill ${prioClass(t.priority)}">${["High", "Medium", "Low"][t.priority - 1]}</span>
           <span class="pill ${deptClass(t.department)}">${deptLabel}</span>
           <span class="pill">${dueLabel}</span>
         </div>
@@ -270,33 +455,34 @@ return res;
         </div>
         <p class="name">${t.name}</p>
       `;
-      grid.appendChild(card);
-    });
-  }
-
-  searchInput.addEventListener("input",()=>render());
-  deptSelect.addEventListener("change",()=>render());
-  prioSelect.addEventListener("change",()=>render());
-  statusSelect.addEventListener("change",()=>render());
-  dueSelect.addEventListener("change",()=>render());
-
-  onSnapshot(collection(db,"taskcheck"), snap=>{
-    rawTasks=[];
-    snap.forEach(doc=>{
-      const d=doc.data();
-      rawTasks.push({
-        id:doc.id,
-        name:d.name || "",
-        department:d.department,
-        priority:Number(d.priority),
-        status:d.status,
-        due:Number(d.due),
-        important:!!d.important
+        grid.appendChild(card);
       });
+    }
+
+    searchInput.addEventListener("input", () => render());
+    deptSelect.addEventListener("change", () => render());
+    prioSelect.addEventListener("change", () => render());
+    statusSelect.addEventListener("change", () => render());
+    dueSelect.addEventListener("change", () => render());
+
+    onSnapshot(collection(db, "taskcheck"), snap => {
+      rawTasks = [];
+      snap.forEach(doc => {
+        const d = doc.data();
+        rawTasks.push({
+          id: doc.id,
+          name: d.name || "",
+          department: d.department,
+          priority: Number(d.priority),
+          status: d.status,
+          due: Number(d.due),
+          important: !!d.important
+        });
+      });
+      render();
     });
-    render();
-  });
-</script>
+  </script>
 
 </body>
+
 </html>
