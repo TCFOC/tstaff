@@ -820,6 +820,10 @@
         padding: 10px;
       }
 
+      #infobox {
+        font-size: 1.2rem;
+      }
+
       #mobileShortcuts {
         width: 100%;
         display: flex !important;
@@ -1329,7 +1333,7 @@
     const next = meetings[0];
     if (next) {
       const d = next.dateObj;
-      const formatted = `Next meeting: ${d.getDate()} ${d.toLocaleString('en-US', { month: 'long' })} ${d.getFullYear()}`;
+      const formatted = `${d.getDate()} ${d.toLocaleString('en-US', { month: 'long' })} ${d.getFullYear()}`;
       el.textContent = formatted;
     } else {
       el.textContent = "No upcoming meetings.";
