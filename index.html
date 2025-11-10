@@ -1301,36 +1301,45 @@
     showTab("login");
 
     window.loadNextMeeting = async function () {
-      try {
-        const res = await fetch('calendar.html');
-        const text = await res.text();
-        const match = text.match(/const\s+events\s*=\s*(\[[\s\S]*?\]);/);
-        if (!match) throw new Error("No events found in calendar.html");
+  try {
+    const res = await fetch("calendar.html");
+    const text = await res.text();
+    const match = text.match(/const\s+events\s*=\s*(\[[\s\S]*?\]);/);
+    if (!match) throw new Error("No events found in calendar.html");
 
-        const events = eval(match[1]);
-        const now = new Date();
-        const meetings = events
-          .filter(e => e.title.toLowerCase().includes("meeting"))
-          .map(e => ({ ...e, dateObj: new Date(e.date) }))
-          .filter(e => e.dateObj >= now)
-          .sort((a, b) => a.dateObj - b.dateObj);
+    const events = eval(match[1]);
+    const now = new Date();
+    const today = now.toDateString();
+    const currentHour = now.getHours();
 
-        const next = meetings[0];
-        const el = document.getElementById("countdown");
+    const meetings = events
+      .filter(e => e.title.toLowerCase().includes("meeting"))
+      .map(e => ({ ...e, dateObj: new Date(e.date) }))
+      .filter(e => {
+        const eventDay = e.dateObj.toDateString();
+        // include meetings today if before 4 PM, otherwise only future ones
+        if (eventDay === today) return currentHour < 16;
+        return e.dateObj > now;
+      })
+      .sort((a, b) => a.dateObj - b.dateObj);
 
-        if (next) {
-          const d = next.dateObj;
-          const formatted = `${d.getDate()} ${d.toLocaleString('en-US', { month: 'long' })} ${d.getFullYear()}`;
-          el.textContent = formatted;
-        } else {
-          el.textContent = "No upcoming meetings.";
-        }
-      } catch (err) {
-        console.error(err);
-        const el = document.getElementById("countdown");
-        if (el) el.textContent = "Unable to fetch meeting data.";
-      }
-    };
+    const el = document.getElementById("countdown");
+    if (!el) return;
+
+    const next = meetings[0];
+    if (next) {
+      const d = next.dateObj;
+      const formatted = `Next meeting: ${d.getDate()} ${d.toLocaleString('en-US', { month: 'long' })} ${d.getFullYear()}`;
+      el.textContent = formatted;
+    } else {
+      el.textContent = "No upcoming meetings.";
+    }
+  } catch (err) {
+    console.error(err);
+    const el = document.getElementById("countdown");
+    if (el) el.textContent = "Unable to fetch meeting data.";
+  }
+};
 
 
   </script>
