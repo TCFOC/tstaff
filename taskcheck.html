@@ -322,6 +322,7 @@
 
     <select id="dueSelect" class="select">
       <option value="all">Due: All</option>
+      <option value="overdue">Overdue Tasks</option>
       <option value="10">October</option>
       <option value="111">Early November</option>
       <option value="112">Late November</option>
@@ -393,7 +394,38 @@
         }
         if (fp !== "all" && t.priority !== Number(fp)) return false;
         if (fs !== "all" && t.status !== fs) return false;
-        if (fdue !== "all" && t.due !== Number(fdue)) return false;
+// ===============================
+// DUE / OVERDUE FILTER
+// ===============================
+if (fdue !== "all") {
+
+  // Overdue mapping
+  const overdueBoundary = {
+    10:  new Date("2025-11-01"), // after 31 Oct
+    111: new Date("2025-11-16"), // after 15 Nov
+    112: new Date("2025-12-01"), // after 30 Nov
+    121: new Date("2025-12-16"), // after 15 Dec
+    122: new Date("2026-01-01"), // after 31 Dec
+    1:   new Date("2026-02-01")  // after 31 Jan
+  };
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  // Handle "Overdue"
+  if (fdue === "overdue") {
+
+    const boundary = overdueBoundary[t.due];
+    if (!boundary) return false;               // unknown code
+    if (t.status === "green") return false;    // done tasks never overdue
+    if (today < boundary) return false;        // not overdue yet
+
+    return true; // keep overdue task
+  }
+
+  // Normal month selection
+  if (t.due !== Number(fdue)) return false;
+}
         return true;
       });
 
