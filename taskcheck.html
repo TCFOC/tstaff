@@ -397,35 +397,41 @@
         return true;
       });
 
-      function dueRank(d) {
-        if (d === 10) return 1;     // Oct
-        if (d === 111) return 2;    // Early Nov
-        if (d === 112) return 3;    // Late Nov
-        if (d === 121) return 4;    // Early Dec
-        if (d === 122) return 5;    // Late Dec
-        if (d === 1) return 6;      // January
-        return 999;                 // Unknown goes to bottom
-      }
+      
 
-      // Custom sort: Important first, then due, then priority,
-      // Done (green) tasks are pushed to the end — except important ones.
-      res.sort((a, b) => {
-        // Important tasks always come first
-        if (a.important !== b.important) return a.important ? -1 : 1;
+      const monthRank = (code) => {
+  if (code === 10) return 1;   // October
+  if (code === 111) return 2;  // Nov 1
+  if (code === 112) return 3;  // Nov 2
+  if (code === 121) return 4;  // Dec 1
+  if (code === 122) return 5;  // Dec 2
+  if (code === 1) return 6;    // January LAST
+  return 999; // fallback
+};
 
-        // Among tasks with same importance:
-        // Non-green first, green last (but if both are green, continue sorting)
-        const aDone = a.status === 'green';
-        const bDone = b.status === 'green';
-        if (aDone !== bDone) return aDone ? 1 : -1;
+res.sort((a, b) => {
+  // Important first
+  if (a.important !== b.important) return a.important ? -1 : 1;
 
-        // If both same done status, sort by due → priority → name
-        if (a.due !== b.due) return (a.due ?? 9999) - (b.due ?? 9999);
-        if (a.priority !== b.priority) return (a.priority ?? 99) - (b.priority ?? 99);
-        return a.name.localeCompare(b.name, 'th');
-      });
-      return res;
-    }
+  // Green last
+  const aDone = a.status === 'green';
+  const bDone = b.status === 'green';
+  if (aDone !== bDone) return aDone ? 1 : -1;
+
+  // Custom due order
+  const aRank = monthRank(a.due);
+  const bRank = monthRank(b.due);
+  if (aRank !== bRank) return aRank - bRank;
+
+  // Priority
+  if (a.priority !== b.priority)
+    return (a.priority ?? 99) - (b.priority ?? 99);
+
+  // Name
+  return a.name.localeCompare(b.name, 'th');
+});
+
+return res;
 
     function render() {
       const list = applyFilters(rawTasks);
