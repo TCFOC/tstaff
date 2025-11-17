@@ -1306,7 +1306,7 @@
 
     window.loadNextMeeting = async function () {
   try {
-    const res = await fetch("calendar.html");
+    const res = await fetch("calendar.html?t=" + Date.now());
     const text = await res.text();
     const match = text.match(/const\s+events\s*=\s*(\[[\s\S]*?\]);/);
     if (!match) throw new Error("No events found in calendar.html");
