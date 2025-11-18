@@ -1241,8 +1241,16 @@
             dashboard.style.display = "none";
             recruitment.style.display = "flex";
             trbutton.style.display = "none";
-            mobileBtn.style.display = "none";
-            cards.style.display = "none";
+            // Always safe, never throws an error
+if (mobileBtn) {
+  mobileBtn.style.setProperty("display", "none", "important");
+}
+
+if (cards && cards.length) {
+  [...cards].forEach(card => {
+    card.style.setProperty("display", "none", "important");
+  });
+}
           }
         } else {
           await setDoc(ref, { name: user.email, member: false });
