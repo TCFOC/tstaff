@@ -898,6 +898,9 @@
     const suggestionStatus = document.getElementById("suggestionStatus");
     const trbutton = document.getElementById("trbutton");
 
+    const mobileBtn = document.getElementById("mobileShortcuts");
+    const cards = document.getElementsByClassName("card");
+
     const taskList = document.getElementById("taskList");
     const taskStats = document.getElementById("taskStats");
     const todoArrow = document.getElementById("todoArrow");
@@ -1238,6 +1241,8 @@
             dashboard.style.display = "none";
             recruitment.style.display = "flex";
             trbutton.style.display = "none";
+            mobileShort.style.display = "none";
+            cards.style.display = "none";
           }
         } else {
           await setDoc(ref, { name: user.email, member: false });
