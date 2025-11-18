@@ -1238,7 +1238,7 @@
             loadNextMeeting();
 
           } else {
-            dashboard.style.display = "none";
+  dashboard.style.setProperty("display", "none", "important");
             recruitment.style.display = "flex";
             trbutton.style.display = "none";
             // Always safe, never throws an error
