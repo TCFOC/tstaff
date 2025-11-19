@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Role — TStaff</title>
+
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --brand-start:#AD28F5;
+  --brand-end:#2D68F2;
+
+  --dept-all:#64748b;
+  --dept-core:#2D68F2;
+  --dept-finance:#26a269;
+  --dept-pr:#7c3aed;
+  --dept-supervision:#eab308;
+  --dept-activities:#ef4444;
+  --dept-recruits:#fb923c;
+  --dept-cc:#9c6b3c;
+}
+
+* {
+  box-sizing:border-box;
+  font-family:'IBM Plex Sans Thai', system-ui, sans-serif;
+}
+
+body {
+  margin:0;
+  background:#f6f7fb;
+  color:#111;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* Header */
+.header {
+  background:linear-gradient(90deg,var(--brand-start),var(--brand-end));
+  color:white;
+  padding:16px 20px;
+  font-size:1.4rem;
+  font-weight:700;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+.header button {
+  background:white;
+  color:#2D68F2;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  font-weight:600;
+  font-size:0.95rem;
+  cursor:pointer;
+}
+
+/* Main Card */
+.container {
+  margin:auto;
+  margin-top:40px;
+  width:min(500px,90%);
+  background:white;
+  padding:28px 24px 30px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.12);
+  text-align:center;
+}
+
+#welcome {
+  margin-top:0;
+  margin-bottom:8px;
+}
+
+.container p {
+  margin-top:0;
+  margin-bottom:18px;
+  color:#555;
+}
+
+/* Role dropdown (fake) */
+.role-dropdown {
+  margin-top:10px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  background:#fafafa;
+}
+
+.role-selected {
+  padding:14px;
+  font-size:1rem;
+  font-weight:600;
+  text-align:left;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+
+.role-selected span.chevron {
+  font-size:1em;
+  opacity:0.6;
+}
+
+/* List */
+.role-list {
+  display:none;
+  border-top:1px solid #ddd;
+  max-height:320px;
+  overflow-y:auto;
+  padding:6px 4px 8px;
+}
+
+.role-item {
+  padding:10px 12px;
+  text-align:left;
+  border-radius:8px;
+  margin:4px;
+  cursor:pointer;
+  color:white;
+}
+
+.role-item-title {
+  font-weight:700;
+  font-size:0.98rem;
+}
+
+.role-item-desc {
+  margin-top:2px;
+  font-size:0.86rem;
+  opacity:0.95;
+}
+
+/* FULL roles (disabled) */
+.role-item.full {
+  background:#d4d4d8 !important;
+  color:#262626 !important;
+  cursor:not-allowed;
+}
+.role-item.full .role-item-desc {
+  color:#404040;
+}
+
+/* Submit button */
+.submit-btn {
+  margin-top:20px;
+  width:100%;
+  padding:12px;
+  font-size:1.05rem;
+  background:#2D68F2;
+  border:none;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.submit-btn:disabled {
+  opacity:0.6;
+  cursor:not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div>TStaff</div>
+  <button onclick="window.location.href='/tstaff'">Back</button>
+</div>
+
+<div class="container">
+  <h2 id="welcome">Welcome!</h2>
+  <p>Please select your role.</p>
+
+  <div class="role-dropdown">
+    <div id="selectedRole" class="role-selected">
+      <span id="selectedRoleLabel">Select role…</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div id="roleList" class="role-list"></div>
+  </div>
+
+  <button id="submitBtn" class="submit-btn" onclick="submitRole()" disabled>Save Role</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+  authDomain: "tstaff-tcf.firebaseapp.com",
+  projectId: "tstaff-tcf",
+  storageBucket: "tstaff-tcf.firebasestorage.app",
+  messagingSenderId: "1038965947691",
+  appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUserEmail = null;
+let selectedRoleId   = null;
+
+/*
+  Roles:
+  - allmembers & core are intentionally NOT here (cannot be chosen).
+  - full: true => appears grey with [FULL] and is NOT selectable.
+*/
+const ROLES = [
+  { id:"finance",     name:"Finances & Sponsors",       color:"var(--dept-finance)",     desc:"Manages budget, pricing, and sponsors",          full:false },
+  { id:"pr",          name:"Public Relations",          color:"var(--dept-pr)",          desc:"Handles posters, social media, and PR",         full:false },
+  { id:"supervision", name:"Student Supervision",       color:"var(--dept-supervision)", desc:"Escorting students and room logistics",         full:false },
+  { id:"activities",  name:"Activities",                color:"var(--dept-activities)",  desc:"Missions, booths, and on-site activities",      full:false },
+  { id:"recruits",    name:"New Recruits",              color:"var(--dept-recruits)",    desc:"Temporary group for new TStaff members",        full:false },
+  { id:"cc",          name:"Creative Contest",          color:"var(--dept-cc)",          desc:"Creative Contest operations, design, and prep", full:false }
+];
+
+const roleListEl     = document.getElementById("roleList");
+const selectedLabel  = document.getElementById("selectedRoleLabel");
+const submitBtn      = document.getElementById("submitBtn");
+
+// Build the role list UI
+function buildRoleList(){
+  roleListEl.innerHTML = "";
+  ROLES.forEach(role=>{
+    const div = document.createElement("div");
+    div.className = "role-item";
+    if (role.full) div.classList.add("full");
+    div.style.background = role.full ? "#d4d4d8" : role.color;
+
+    const fullTag = role.full ? " [FULL]" : "";
+
+    div.innerHTML = `
+      <div class="role-item-title">${role.name}</div>
+      <div class="role-item-desc">${role.desc}${fullTag}</div>
+    `;
+
+    if (!role.full) {
+      div.addEventListener("click", (ev)=>{
+        ev.stopPropagation();
+        selectRole(role.id);
+        toggleRoleList(false);
+      });
+    }
+    roleListEl.appendChild(div);
+  });
+}
+
+function toggleRoleList(forceState){
+  if (typeof forceState === "boolean") {
+    roleListEl.style.display = forceState ? "block" : "none";
+    return;
+  }
+  roleListEl.style.display = roleListEl.style.display === "block" ? "none" : "block";
+}
+
+function selectRole(id){
+  const role = ROLES.find(r=>r.id===id);
+  if (!role || role.full) return;
+
+  selectedRoleId = id;
+  selectedLabel.textContent = role.name;
+  submitBtn.disabled = false;
+}
+
+// Save to Firestore
+async function submitRole(){
+  if (!currentUserEmail || !selectedRoleId) return;
+  const role = ROLES.find(r=>r.id===selectedRoleId);
+  if (!role) return;
+
+  const confirmed = window.confirm(`Confirm role: ${role.name}?`);
+  if (!confirmed) return;
+
+  try {
+    const ref = doc(db,"users", currentUserEmail);
+    await updateDoc(ref, { department: selectedRoleId });
+
+    alert("Role saved successfully.");
+    window.location.href = "/tstaff";
+  } catch (err) {
+    console.error(err);
+    alert("Error saving role: " + err.message);
+  }
+}
+
+// Attach dropdown click behavior
+document.querySelector(".role-dropdown").addEventListener("click",(ev)=>{
+  // ignore clicks inside the list (handled separately)
+  if (ev.target.closest(".role-list")) return;
+  toggleRoleList();
+});
+
+// Close list when clicking outside
+document.addEventListener("click",(ev)=>{
+  if (!ev.target.closest(".role-dropdown")) {
+    toggleRoleList(false);
+  }
+});
+
+// Auth + greeting
+onAuthStateChanged(auth, async (user)=>{
+  if (!user) {
+    // Not logged in → send back to TStaff login
+    window.location.href = "/tstaff";
+    return;
+  }
+  currentUserEmail = user.email;
+
+  const ref = doc(db,"users", user.email);
+  const snap = await getDoc(ref);
+  const welcomeEl = document.getElementById("welcome");
+
+  if (snap.exists()) {
+    const data = snap.data();
+    const name = (data.name || user.email || "there").split(" ")[0];
+    welcomeEl.textContent = `Hey, ${name}!`;
+  } else {
+    welcomeEl.textContent = `Hey, ${user.email}!`;
+  }
+});
+
+// init
+buildRoleList();
+
+// expose submitRole for inline onclick
+window.submitRole = submitRole;
+</script>
+</body>
+</html>
