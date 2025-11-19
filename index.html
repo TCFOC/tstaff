@@ -527,7 +527,7 @@
     #recruitment {
       flex: 1 1 auto;
       display: none;
-      min-height: 0;
+      height: calc(100svh - 60px);
     }
 
     #recruitment iframe {
@@ -593,7 +593,7 @@
         <p><strong>Full Name:</strong> <span id="accountName"></span></p>
         <p><strong>Email:</strong> <span id="accountEmail"></span></p>
         <p><strong>Status:</strong> <span id="accountStatus" style="font-weight:600;"></span></p>
-        <p style="font-size:12px; color:#666; font-weight:400;">TStaff Version 3.1.2</p>
+        <p style="font-size:12px; color:#666; font-weight:400;">TStaff Version 3.1.3</p>
         <button style="background-color:#2D68F2; text-align:center;" onclick="window.location.href='https://u.lin.ee/t3mThvd';" id="trbutton">TRewards</button>
         <button onclick="logout()">Logout</button>
       </div>
@@ -652,8 +652,8 @@
     </div>
 
     <!-- Recruitment -->
-    <div id="recruitment">
-      <iframe src="https://tcfthailand.com/tstaff/recruiter"></iframe>
+    <div id="recruitment" style="height:calc(100svh-60px);">
+      <iframe src="https://tcfthailand.com/tstaff/recruiter" style="width:100vw;height:calc(100svh-60px);padding:0;margin:0;"></iframe>
     </div>
   </div>
 
@@ -1239,7 +1239,7 @@
 
           } else {
   dashboard.style.setProperty("display", "none", "important");
-            recruitment.style.display = "flex";
+            recruitment.style.display = "block";
             trbutton.style.display = "none";
             // Always safe, never throws an error
 if (mobileBtn) {

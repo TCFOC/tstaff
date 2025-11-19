@@ -5,6 +5,7 @@
   <title>Recruitment</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    html, body { height:100%; }
     * { font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; }
     body { margin:0; display:flex; flex-direction:column; min-height:100svh; background:#fff; color:#222; }
     .container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; }
@@ -17,6 +18,23 @@
       font-size:1rem; margin-top:2rem;
     }
     button span { margin-left:0.6rem; font-size:18px; font-family:system-ui, sans-serif !important;}
+
+    /* page visibility helpers */
+    .hidden { display:none !important; }
+
+    /* full-page iframe */
+    #formPage {
+      height:100vh;
+      width:100vw;
+      padding:0;
+    }
+
+    #formFrame {
+      border:none;
+      width:100%;
+      height:100vh;
+      display:block;
+    }
   </style>
 </head> 
 <body>
@@ -29,29 +47,27 @@
   <p>If you think you are a good fit, click the button below to start!</p>
   <button onclick="seeReq()">View Requirements &rarr;</button>
 </div> 
-<div id="rqmPage" class="container" style="display:none;">
+
+<div id="rqmPage" class="container hidden">
   <h1>Requirements</h1>
   <img src="https://tcfthailand.com/tstaff/rqm.jpeg" width="500">
   <button onclick="startForm()">Start Form &rarr;</button>
 </div>
 
-<div id="formPage" class="container" style="display:none; width:90dvw; height:90svh; padding:0;">
-  <iframe id="formFrame" 
-          src="https://tally.so/r/n9xeME" 
-          style="border:none; width:100%; height:100%;">
-  </iframe>
+<div id="formPage" class="hidden">
+  <iframe id="formFrame" src="https://tally.so/r/n9xeME"></iframe>
 </div>
 
 <script>
   function seeReq() {
-    document.getElementById("infoPage").style.display = "none";
-    document.getElementById("rqmPage").style.display = "flex";
+    infoPage.classList.add("hidden");
+    rqmPage.classList.remove("hidden");
   }
 
   function startForm(){
-    document.getElementById("rqmPage").style.display = "none";
-    document.getElementById("formPage").style.display = "flex";
-    document.getElementById("formFrame").style.display = "flex"; // replace with your form link
+    rqmPage.classList.add("hidden");
+    formPage.classList.remove("hidden");
+    formFrame.style.height = "100vh";
   }
 </script>
 
