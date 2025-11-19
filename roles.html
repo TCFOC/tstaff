@@ -20,6 +20,7 @@
   --dept-activities:#ef4444;
   --dept-recruits:#fb923c;
   --dept-cc:#9c6b3c;
+  --dept-grader:#ff55aa;
 }
 
 * {
@@ -34,6 +35,7 @@ body {
   display:flex;
   flex-direction:column;
   min-height:100vh;
+  overflow:hidden;
 }
 
 /* Header */
@@ -65,6 +67,7 @@ body {
   margin:auto;
   margin-top:40px;
   width:min(500px,90%);
+  height:calc(100svh-60px);
   background:white;
   padding:28px 24px 30px;
   border-radius:16px;
@@ -192,7 +195,7 @@ body {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
@@ -210,52 +213,79 @@ const db   = getFirestore(app);
 let currentUserEmail = null;
 let selectedRoleId   = null;
 
-/*
-  Roles:
-  - allmembers & core are intentionally NOT here (cannot be chosen).
-  - full: true => appears grey with [FULL] and is NOT selectable.
-*/
+/* ============================
+   ROLE DEFINITIONS
+   ============================ */
 const ROLES = [
-  { id:"finance",     name:"Finances & Sponsors",       color:"var(--dept-finance)",     desc:"Manages budget, pricing, and sponsors",          full:false },
-  { id:"pr",          name:"Public Relations",          color:"var(--dept-pr)",          desc:"Handles posters, social media, and PR",         full:false },
-  { id:"supervision", name:"Student Supervision",       color:"var(--dept-supervision)", desc:"Escorting students and room logistics",         full:false },
-  { id:"activities",  name:"Activities",                color:"var(--dept-activities)",  desc:"Missions, booths, and on-site activities",      full:false },
-  { id:"recruits",    name:"New Recruits",              color:"var(--dept-recruits)",    desc:"Temporary group for new TStaff members",        full:false },
-  { id:"cc",          name:"Creative Contest",          color:"var(--dept-cc)",          desc:"Creative Contest operations, design, and prep", full:false }
+  { id:"finance",     name:"Finances & Sponsors",  color:"var(--dept-finance)",     max:5 },
+  { id:"pr",          name:"Public Relations",     color:"var(--dept-pr)",          max:999 }, // unlimited
+  { id:"supervision", name:"Student Supervision",  color:"var(--dept-supervision)", max:20 },
+  { id:"grading",     name:"Exam Grading",         color:"var(--dept-grader)",      max:8 },
+  { id:"activities",  name:"Activities",           color:"var(--dept-activities)",  max:7 },
+  { id:"cc",          name:"Creative Contest",     color:"var(--dept-cc)",          max:7 }
 ];
 
+// DOM
 const roleListEl     = document.getElementById("roleList");
 const selectedLabel  = document.getElementById("selectedRoleLabel");
 const submitBtn      = document.getElementById("submitBtn");
 
-// Build the role list UI
-function buildRoleList(){
+/* ============================
+   LOAD USER COUNTS
+   ============================ */
+async function loadRoleCounts() {
+  const usersSnap = await getDocs(collection(db, "users"));
+  const counts = {};
+
+  ROLES.forEach(r => counts[r.id] = 0);
+
+  usersSnap.forEach(docSnap => {
+    const dept = docSnap.data().department;
+    if (counts.hasOwnProperty(dept)) {
+      counts[dept]++;
+    }
+  });
+
+  return counts;
+}
+
+/* ============================
+   REBUILD ROLE LIST
+   ============================ */
+async function buildRoleList() {
+  const counts = await loadRoleCounts();
   roleListEl.innerHTML = "";
-  ROLES.forEach(role=>{
+
+  ROLES.forEach(role => {
+    const used = counts[role.id];
+    const full = used >= role.max;
+
     const div = document.createElement("div");
     div.className = "role-item";
-    if (role.full) div.classList.add("full");
-    div.style.background = role.full ? "#d4d4d8" : role.color;
+    if (full) div.classList.add("full");
 
-    const fullTag = role.full ? " [FULL]" : "";
+    div.style.background = full ? "#d4d4d8" : role.color;
+
+    const fullTag = full ? " [FULL]" : "";
 
     div.innerHTML = `
       <div class="role-item-title">${role.name}</div>
-      <div class="role-item-desc">${role.desc}${fullTag}</div>
+      <div class="role-item-desc">${used}/${role.max} ${fullTag}</div>
     `;
 
-    if (!role.full) {
-      div.addEventListener("click", (ev)=>{
+    if (!full) {
+      div.addEventListener("click", ev => {
         ev.stopPropagation();
         selectRole(role.id);
         toggleRoleList(false);
       });
     }
+
     roleListEl.appendChild(div);
   });
 }
 
-function toggleRoleList(forceState){
+function toggleRoleList(forceState) {
   if (typeof forceState === "boolean") {
     roleListEl.style.display = forceState ? "block" : "none";
     return;
@@ -263,60 +293,63 @@ function toggleRoleList(forceState){
   roleListEl.style.display = roleListEl.style.display === "block" ? "none" : "block";
 }
 
-function selectRole(id){
-  const role = ROLES.find(r=>r.id===id);
-  if (!role || role.full) return;
+function selectRole(id) {
+  const role = ROLES.find(r => r.id === id);
+  if (!role) return;
 
   selectedRoleId = id;
   selectedLabel.textContent = role.name;
   submitBtn.disabled = false;
 }
 
-// Save to Firestore
-async function submitRole(){
+/* ============================
+   SAVE ROLE
+   ============================ */
+async function submitRole() {
   if (!currentUserEmail || !selectedRoleId) return;
-  const role = ROLES.find(r=>r.id===selectedRoleId);
+
+  const role = ROLES.find(r => r.id === selectedRoleId);
   if (!role) return;
 
   const confirmed = window.confirm(`Confirm role: ${role.name}?`);
   if (!confirmed) return;
 
   try {
-    const ref = doc(db,"users", currentUserEmail);
+    const ref = doc(db, "users", currentUserEmail);
     await updateDoc(ref, { department: selectedRoleId });
 
     alert("Role saved successfully.");
     window.location.href = "/tstaff";
   } catch (err) {
+    alert("Error: " + err.message);
     console.error(err);
-    alert("Error saving role: " + err.message);
   }
 }
 
-// Attach dropdown click behavior
-document.querySelector(".role-dropdown").addEventListener("click",(ev)=>{
-  // ignore clicks inside the list (handled separately)
+/* ============================
+   UI EVENTS
+   ============================ */
+document.querySelector(".role-dropdown").addEventListener("click", ev => {
   if (ev.target.closest(".role-list")) return;
   toggleRoleList();
 });
 
-// Close list when clicking outside
-document.addEventListener("click",(ev)=>{
-  if (!ev.target.closest(".role-dropdown")) {
-    toggleRoleList(false);
-  }
+document.addEventListener("click", ev => {
+  if (!ev.target.closest(".role-dropdown")) toggleRoleList(false);
 });
 
-// Auth + greeting
-onAuthStateChanged(auth, async (user)=>{
+/* ============================
+   AUTH + WELCOME
+   ============================ */
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    // Not logged in → send back to TStaff login
     window.location.href = "/tstaff";
     return;
   }
+
   currentUserEmail = user.email;
 
-  const ref = doc(db,"users", user.email);
+  const ref = doc(db, "users", user.email);
   const snap = await getDoc(ref);
   const welcomeEl = document.getElementById("welcome");
 
@@ -327,12 +360,10 @@ onAuthStateChanged(auth, async (user)=>{
   } else {
     welcomeEl.textContent = `Hey, ${user.email}!`;
   }
+
+  buildRoleList();
 });
 
-// init
-buildRoleList();
-
-// expose submitRole for inline onclick
 window.submitRole = submitRole;
 </script>
 </body>
