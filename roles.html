@@ -114,7 +114,7 @@ body {
 .role-list {
   display:none;
   border-top:1px solid #ddd;
-  max-height:320px;
+  max-height:280px;
   overflow-y:auto;
   padding:6px 4px 8px;
 }
@@ -266,11 +266,15 @@ async function buildRoleList() {
 
     div.style.background = full ? "#d4d4d8" : role.color;
 
+    // Keep original desc + append (x/max) + [FULL]
     const fullTag = full ? " [FULL]" : "";
+    const countText = ` (${used}/${role.max})`;
 
     div.innerHTML = `
       <div class="role-item-title">${role.name}</div>
-      <div class="role-item-desc">${used}/${role.max} ${fullTag}</div>
+      <div class="role-item-desc">
+        ${role.desc}${countText}${fullTag}
+      </div>
     `;
 
     if (!full) {
