@@ -217,12 +217,48 @@ let selectedRoleId   = null;
    ROLE DEFINITIONS
    ============================ */
 const ROLES = [
-  { id:"finance",     name:"Finances & Sponsors",  color:"var(--dept-finance)",     max:5 },
-  { id:"pr",          name:"Public Relations",     color:"var(--dept-pr)",          max:999 }, // unlimited
-  { id:"supervision", name:"Student Supervision",  color:"var(--dept-supervision)", max:20 },
-  { id:"grading",     name:"Exam Grading",         color:"var(--dept-grader)",      max:8 },
-  { id:"activities",  name:"Activities",           color:"var(--dept-activities)",  max:7 },
-  { id:"cc",          name:"Creative Contest",     color:"var(--dept-cc)",          max:7 }
+  { 
+    id: "finance",
+    name: "Finances & Sponsors",
+    color: "var(--dept-finance)",
+    max: 5,
+    desc: "Manages budget, pricing, and sponsors"
+  },
+  { 
+    id: "pr",
+    name: "Public Relations",
+    color: "var(--dept-pr)",
+    max: 4,
+    desc: "Handles posters, social media, and PR"
+  },
+  { 
+    id: "supervision",
+    name: "Student Supervision",
+    color: "var(--dept-supervision)",
+    max: 20,
+    desc: "Looks after and supervises students throughout the day"
+  },
+  { 
+    id: "grading",
+    name: "Exam Grading",
+    color: "var(--dept-grader)",   // your pink color
+    max: 8,
+    desc: "Grades exam papers across divisions"
+  },
+  { 
+    id: "activities",
+    name: "Activities",
+    color: "var(--dept-activities)",
+    max: 7,
+    desc: "Manages indoor and outdoor activities during the event"
+  },
+  { 
+    id: "cc",
+    name: "Creative Contest",
+    color: "var(--dept-cc)",
+    max: 7,
+    desc: "Operates and assists the Creative Contest booth"
+  }
 ];
 
 // DOM
