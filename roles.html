@@ -221,11 +221,25 @@ let selectedRoleId   = null;
    ============================ */
 const ROLES = [
   { 
-    id: "finance",
-    name: "Finances",
-    color: "var(--dept-finance)",
-    max: 3,
-    desc: "Manages budget and purchases"
+    id: "supervision",
+    name: "Student Supervision",
+    color: "var(--dept-supervision)",
+    max: 12,
+    desc: "Supervise students throughout the day"
+  },
+  { 
+    id: "grading",
+    name: "Exam Grading",
+    color: "var(--dept-grader)",   
+    max: 4,
+    desc: "Grades student exam papers"
+  },
+  { 
+    id: "activities",
+    name: "Activities",
+    color: "var(--dept-activities)",
+    max: 4,
+    desc: "Manages activities during the event"
   },
   { 
     id: "pr",
@@ -235,33 +249,19 @@ const ROLES = [
     desc: "Handles posters, social media, and PR"
   },
   { 
-    id: "supervision",
-    name: "Student Supervision",
-    color: "var(--dept-supervision)",
-    max: 20,
-    desc: "Supervise students throughout the day"
-  },
-  { 
-    id: "grading",
-    name: "Exam Grading",
-    color: "var(--dept-grader)",   
-    max: 8,
-    desc: "Grades student exam papers"
-  },
-  { 
-    id: "activities",
-    name: "Activities",
-    color: "var(--dept-activities)",
-    max: 7,
-    desc: "Manages activities during the event"
-  },
-  { 
     id: "cc",
     name: "Creative Contest",
     color: "var(--dept-cc)",
-    max: 7,
+    max: 4,
     desc: "Look after students and guests in the Creative Contest booths"
   }
+  { 
+    id: "finance",
+    name: "Finances",
+    color: "var(--dept-finance)",
+    max: 3,
+    desc: "Manages budget and purchases"
+  },
 ];
 
 // DOM
