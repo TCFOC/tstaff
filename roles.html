@@ -182,7 +182,7 @@ body {
 
 <div class="container">
   <h2 id="welcome">Loading, please wait...</h2>
-  <p>Please select your role.</p>
+  <p>Account Settings</p>
 
   <div class="role-dropdown">
     <div id="selectedRole" class="role-selected">
@@ -193,7 +193,10 @@ body {
   </div>
 
   <button id="submitBtn" class="submit-btn" onclick="submitRole()" disabled>Save Role</button>
+<br><br><h2>Contact Information</h2>
+  <a href="https://tcfthailand.com/tstaff/phone" target="_self"><button class="submit-btn" style="margin-top:0;" >Add/Edit Phone Number</button></a>
 </div>
+
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -386,7 +389,7 @@ document.addEventListener("click", ev => {
    ============================ */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    window.location.href = "/tstaff";
+
     return;
   }
 
