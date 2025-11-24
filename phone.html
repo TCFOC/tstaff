@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Number</title>
+
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #f6f7fb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    padding: 20px;
+  }
+
+  .container {
+    width: min(90%, 420px);
+    background: #fff;
+    padding: 26px 24px;
+    border-radius: 16px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.12);
+    text-align: center;
+  }
+
+  h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111;
+  }
+
+  /* Perfect alignment fix */
+  .inputField,
+  .submitBtn,
+  .editBtn {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box !important;
+    display: block;
+  }
+
+  .inputField {
+    padding: 14px 16px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    -webkit-appearance: none;
+  }
+
+  .submitBtn {
+    padding: 14px;
+    background: linear-gradient(90deg, #AD28F5, #2D68F2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+
+  .editBtn {
+    padding: 12px;
+    background: #e5e5e5;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+
+  .successBox {
+    margin-top: 16px;
+    padding: 12px;
+    background: #e5f8e7;
+    color: #26a269;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  #loginWarn {
+    color: #d23;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Phone Number</h2>
+
+  <div id="submittedBox" style="display:none;">
+      <div class="successBox">✔ You have already submitted your phone number.</div>
+      <button class="editBtn" onclick="enableEdit()">Edit</button>
+  </div>
+
+  <input id="phoneInput" class="inputField" type="text" placeholder="XXX-XXX-XXXX" maxlength="12">
+  <button class="submitBtn" onclick="savePhone()">Submit</button>
+
+  <div id="loginWarn">Please login first.</div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDKHyMNxgnUH9zn0HQHDNf98GFphC9rv_4",
+    authDomain: "tstaff-tcf.firebaseapp.com",
+    projectId: "tstaff-tcf",
+    storageBucket: "tstaff-tcf.firebasestorage.app",
+    messagingSenderId: "1038965947691",
+    appId: "1:1038965947691:web:8a2f21a6424b82c14ad96e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const phoneInput = document.getElementById("phoneInput");
+  const submittedBox = document.getElementById("submittedBox");
+  const loginWarn = document.getElementById("loginWarn");
+
+  let currentEmail = null;
+
+  // Auto formatting
+  phoneInput.addEventListener("input", () => {
+    let v = phoneInput.value.replace(/\D/g, "");
+    if (v.length > 3 && v.length <= 6) v = v.replace(/(\d{3})(\d+)/, "$1-$2");
+    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d+)/, "$1-$2-$3");
+    phoneInput.value = v;
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      loginWarn.style.display = "block";
+      return;
+    }
+
+    loginWarn.style.display = "none";
+    currentEmail = user.email;
+
+    const ref = doc(db, "users", currentEmail);
+    const snap = await getDoc(ref);
+
+    if (snap.exists() && snap.data().phone) {
+      phoneInput.style.display = "none";
+      document.querySelector(".submitBtn").style.display = "none";
+      submittedBox.style.display = "block";
+      phoneInput.value = snap.data().phone;
+    }
+  });
+
+  // Save phone
+  window.savePhone = async function () {
+    if (!currentEmail) return;
+
+    const value = phoneInput.value.trim();
+    if (!/^\d{3}-\d{3}-\d{4}$/.test(value)) {
+      alert("Please enter a valid phone number (XXX-XXX-XXXX).");
+      return;
+    }
+
+    await updateDoc(doc(db, "users", currentEmail), { phone: value });
+
+    phoneInput.style.display = "none";
+    document.querySelector(".submitBtn").style.display = "none";
+    submittedBox.style.display = "block";
+  };
+
+  // Enable editing
+  window.enableEdit = function () {
+    submittedBox.style.display = "none";
+    phoneInput.style.display = "block";
+    document.querySelector(".submitBtn").style.display = "block";
+  };
+</script>
+
+</body>
+</html>
