@@ -210,6 +210,7 @@
     // ==============================
     //  EVENT DATA
     // ==============================
+    /*
     const events = [
       { date: "2025-11-06", title: "Meeting", color: "blue" },
       { date: "2025-11-06", title: "CC Orientation", color: "purple" },
@@ -226,13 +227,25 @@
       { date: "2025-12-12", title: "End of TCF Registration", color: "orange" },
       { date: "2025-12-18", title: "Meeting", color: "blue" },
       { date: "2026-01-11", title: "The 2nd TCF 2026", color: "red" }
-    ];
+    ];*/
+
+    let events = [];
+
+fetch(“events.json”)
+.then(res => res.json())
+.then(data => {
+events = data;
+render();
+})
+.catch(err => {
+console.error(“Failed to load events:”, err);
+});
 
     // ==============================
     //  STATE
     // ==============================
-    let currentMonth = 10;
-    let currentYear = 2025;
+    let currentMonth = 3;
+    let currentYear = 2026;
 
     // ==============================
     //  RENDER
@@ -324,7 +337,7 @@
       render();
     }
 
-    render();
+
   </script>
 
 </body>
